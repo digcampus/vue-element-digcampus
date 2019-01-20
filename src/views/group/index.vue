@@ -21,12 +21,17 @@
       </el-table-column>
       <el-table-column :label="$t('group.name')" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span class="link-type" style="text-overflow:ellipsis;" @click="handleUpdate(scope.row, false)">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('createDate')" width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.createDate }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="人数" width="60px;" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.userList.length }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('comment')" min-width="30%" align="center">
@@ -40,10 +45,7 @@
             <el-dropdown class="avatar-container right-menu-item" trigger="click">
               <i style="cursor:pointer" class="el-icon-caret-bottom"/>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>
-                  <span style="display:block;" @click="handleUpdate(scope.row, false)">查 看</span>
-                </el-dropdown-item>
-                <el-dropdown-item v-if="type" divided>
+                <el-dropdown-item v-if="type">
                   <span style="display:block;" @click="handleUpdate(scope.row, true)">{{ $t('edit') }}</span>
                 </el-dropdown-item>
                 <el-dropdown-item v-if="type" divided>

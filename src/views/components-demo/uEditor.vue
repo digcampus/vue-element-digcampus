@@ -87,7 +87,7 @@ export default {
       userList: [],
       articleId: this.$route.params.id,
       article: {
-        id: undefined,
+        articleId: undefined,
         fid: this.$store.state.user.fid,
         title: undefined,
         upload: 0,

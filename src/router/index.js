@@ -6,6 +6,8 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/views/layout/Layout'
 
+import tableRouter from './modules/table'
+
 /** note: Submenu only appear when children.length>=1
  *  detail see  https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
  **/
@@ -334,5 +336,6 @@ export const asyncRouterMap = [
       }
     ]
   },
-  { path: '*', redirect: '/404', hidden: true }
+  { path: '*', redirect: '/404', hidden: true },
+  tableRouter
 ]
