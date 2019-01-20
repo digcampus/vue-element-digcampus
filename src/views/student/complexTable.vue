@@ -40,7 +40,7 @@
       </el-table-column>
       <el-table-column label="学生姓名" width="100px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span>{{ scope.row.realname }}</span>
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" label="学籍号" width="180px" align="center">
@@ -70,7 +70,7 @@
       </el-table-column>
       <el-table-column v-if="false" :show-overflow-tooltip="true" label="角色" width="60px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.position }}</span>
+          <span>{{ scope.row.role }}</span>
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" label="家庭地址" min-width="220px">
@@ -138,8 +138,8 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" append-to-body width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" :disabled="disabled" label-position="right" label-width="20%" style="width: 90%; margin-left:10px;">
-        <el-form-item label="学生姓名" prop="name">
-          <el-input v-model="temp.name" :maxlength="20"/>
+        <el-form-item label="学生姓名" prop="realname">
+          <el-input v-model="temp.realname" :maxlength="20"/>
         </el-form-item>
         <el-form-item label="学籍号" prop="stuNo">
           <el-input v-model="temp.stuNo"/>
@@ -216,8 +216,8 @@
             width="300"
             trigger="click">
             <el-form ref="popoverForm" :rules="rules" :model="formLabelAlign" label-position="right" label-width="60px">
-              <el-form-item label="姓名" prop="name">
-                <el-input v-model="formLabelAlign.name"/>
+              <el-form-item label="姓名" prop="realname">
+                <el-input v-model="formLabelAlign.realname"/>
               </el-form-item>
               <el-form-item label="角色">
                 <el-input v-model="formLabelAlign.role"/>
@@ -320,7 +320,7 @@ export default {
         importance: undefined,
         title: undefined,
         type: undefined,
-        name: undefined,
+        realname: undefined,
         area: undefined,
         sort: '+id'
       },
@@ -341,7 +341,7 @@ export default {
         remark: '',
         timestamp: new Date(),
         class: undefined,
-        name: undefined,
+        realname: undefined,
         sex: 0,
         parentStuList: [],
         selectedOptions2: undefined,
@@ -363,7 +363,7 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        name: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
+        realname: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
         stuNo: [{ required: true, message: '学号不能为空', trigger: 'blur' }]
       },
       downloadLoading: false,
