@@ -46,13 +46,13 @@
         </el-table-column>
         <el-table-column label="名称" min-width="30%" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.realname }}</span>
           </template>
         </el-table-column>
         <el-table-column label="类型" min-width="30%" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.roles[0]==1">教师</span>
-            <span v-if="scope.row.roles[0]==2">班级</span>
+            <span v-if="scope.row.roles[0]==2">学生</span>
             <span v-if="scope.row.roles[0]==3">群组</span>
           </template>
         </el-table-column>
@@ -143,7 +143,7 @@ export default {
       for (var index in userList) {
         var userReceiver = {}
         userReceiver.uid = userList[index].uid
-        userReceiver.name = userList[index].name
+        userReceiver.realname = userList[index].realname
         userReceiver.roles = [1]
         tempList.push(userReceiver)
       }
@@ -151,7 +151,7 @@ export default {
       for (var i in groupList) {
         var groupReceiver = {}
         groupReceiver.uid = groupList[i].groupId
-        groupReceiver.name = groupList[i].name
+        groupReceiver.realname = groupList[i].name
         groupReceiver.roles = [3]
         tempList.push(groupReceiver)
       }

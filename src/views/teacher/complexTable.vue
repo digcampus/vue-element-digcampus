@@ -54,7 +54,7 @@
       </el-table-column>
       <el-table-column label="姓名" width="160px" align="left">
         <template slot-scope="scope">
-          <span class="link-type" style="text-overflow:ellipsis;" @click="handleUpdate(scope.row, true)">{{ scope.row.name }}</span>
+          <span class="link-type" style="text-overflow:ellipsis;" @click="handleUpdate(scope.row, true)">{{ scope.row.realname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="编号" width="200px">
@@ -115,8 +115,8 @@
         <el-form-item label="编号" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="temp.name"/>
+        <el-form-item label="姓名" prop="realname">
+          <el-input v-model="temp.realname"/>
         </el-form-item>
         <el-form-item label="登录名" prop="username">
           <el-input v-model="temp.username" placeholder="默认为姓名"/>
@@ -341,7 +341,7 @@ export default {
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         code: [{ required: true, message: '教师编号必填', trigger: 'blur' }],
-        name: [{ required: true, message: '教师姓名必填', trigger: 'blur' }]
+        realname: [{ required: true, message: '教师姓名必填', trigger: 'blur' }]
       },
       downloadLoading: false,
       multipleSelection: [],

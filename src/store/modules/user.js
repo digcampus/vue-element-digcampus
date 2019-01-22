@@ -14,6 +14,7 @@ const user = {
     roles: [],
     avatar: '',
     introduction: '',
+    msgcount: undefined,
     setting: {
       articlePlatform: []
     }
@@ -53,6 +54,9 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_MSGCOUNT: (state, msgcount) => {
+      state.msgcount = msgcount
     }
   },
 
@@ -68,7 +72,8 @@ const user = {
             const data = response.data.result
             commit('SET_TOKEN', data.token)
             commit('SET_FID', fid)
-            commit('SET_NAME', data.name)
+            commit('SET_NAME', data.realname)
+            commit('SET_MSGCOUNT', '')
             commit('SET_ADMIN', data.roles.includes(1))
             commit('SET_UID', data.uid)
             setToken(data.token)

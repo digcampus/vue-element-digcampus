@@ -270,7 +270,7 @@ export default {
       this.getList()
     },
     handleModifyStatus(row) {
-      this.listQuery.id = row.id
+      this.listQuery.id = row.articleId
       this.articleName = row.title
       this.getList()
       this.dialogFormVisible = true

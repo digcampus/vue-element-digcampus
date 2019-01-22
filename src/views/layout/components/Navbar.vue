@@ -6,28 +6,35 @@
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <error-log class="errLog-container right-menu-item"/>
-        <div>
-          <span style="color: slategray;">{{ $store.state.user.name }}</span>
-          <el-dropdown class="avatar-container right-menu-item" trigger="click">
-            <i style="cursor:pointer" class="el-icon-caret-bottom"/>
-            <el-dropdown-menu slot="dropdown">
-              <router-link to="/">
-                <el-dropdown-item>
-                  {{ $t('navbar.dashboard') }}
-                </el-dropdown-item>
-              </router-link>
-              <router-link to="/">
-                <el-dropdown-item>
-                  个人中心
-                </el-dropdown-item>
-              </router-link>
-              <el-dropdown-item divided>
-                <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
+        <el-tooltip content="消息" effect="dark" placement="bottom">
+          <el-badge :value="$store.state.user.msgcount?$store.state.user.msgcount : ''" class="item international right-menu-item">
+            <router-link to="/message/list">
+              <el-button type="info" size="small" icon="el-icon-message"/>
+            </router-link>
+          </el-badge>
+        </el-tooltip>
       </template>
+
+      <el-dropdown class="avatar-container right-menu-item" trigger="click">
+        <div class="avatar-wrapper">
+          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+        </div>
+        <el-dropdown-menu slot="dropdown">
+          <router-link to="/">
+            <el-dropdown-item>
+              {{ $t('navbar.dashboard') }}
+            </el-dropdown-item>
+          </router-link>
+          <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
+            <el-dropdown-item>
+              {{ $t('navbar.github') }}
+            </el-dropdown-item>
+          </a>
+          <el-dropdown-item divided>
+            <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
   </div>
 </template>
@@ -41,6 +48,7 @@ import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import ThemePicker from '@/components/ThemePicker'
+import { fetchUnreadMsgCount } from '@/api/user'
 
 export default {
   components: {
@@ -52,6 +60,16 @@ export default {
     LangSelect,
     ThemePicker
   },
+  data() {
+    return {
+      count: this.$store.getters.user.msgcount,
+      listQuery: {
+        fid: this.$store.getters.user.fid,
+        receiveUserId: this.$store.getters.user.uid,
+        read: 0
+      }
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
@@ -60,7 +78,17 @@ export default {
       'device'
     ])
   },
+  created() {
+    this.init()
+  },
   methods: {
+    init() {
+      if (!this.$store.getters.user.msgcount) {
+        fetchUnreadMsgCount(this.listQuery).then(response => {
+          this.$store.getters.user.msgcount = response.data.result
+        })
+      }
+    },
     toggleSideBar() {
       this.$store.dispatch('toggleSideBar')
     },
@@ -74,31 +102,6 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.Botton {
-   display: inline-block;
-    text-align:center;
-    color: slategray;
-}
-.title {
-  position:absolute;
-  left:40%;
-}
-.item {
-    margin-top: -30px;
-    margin-right: 1px;
-}
-.el-badge__content.is-dot {
-    height: 10px !important;
-    width: 10px !important;
-    top: 12px !important;
-}
-.el-badge__content.is-fixed {
-    position: absolute;
-    top: 12px !important;
-    right: 10px;
-    -webkit-transform: translateY(-50%) translateX(100%);
-    transform: translateY(-50%) translateX(100%);
-}
 .navbar {
   height: 50px;
   line-height: 50px;

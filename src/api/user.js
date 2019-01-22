@@ -130,11 +130,11 @@ export function downloadZip(articleId, name) {
   window.location.href = data
 }
 
-export function deleteAttachment(query) {
+export function deleteAttachment(data) {
   return request({
     url: '/ueditor/deleteAttachment',
-    method: 'get',
-    params: query
+    method: 'post',
+    data
   })
 }
 
@@ -216,6 +216,32 @@ export function fetchTemplateList(query) {
 export function addCourseClass(data) {
   return request({
     url: '/teacher/addCourseClass',
+    method: 'post',
+    data
+  })
+}
+
+// 获取消息列表
+export function fetchMsgList(query) {
+  return request({
+    url: '/ueditor/msg/list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取消息列表
+export function fetchUnreadMsgCount(query) {
+  return request({
+    url: '/ueditor/msg/unreadcount',
+    method: 'get',
+    params: query
+  })
+}
+
+export function updateAttachment(data) {
+  return request({
+    url: '/ueditor/updateAttachment',
     method: 'post',
     data
   })

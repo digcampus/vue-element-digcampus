@@ -15,34 +15,60 @@
             <span>{{ scope.$index + 1 }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" width="150px" label="发布者">
+        <el-table-column align="left" width="90px" label="发布者">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.realname }}</span>
           </template>
         </el-table-column>
-        <el-table-column width="200px" align="center" label="发布时间">
+        <el-table-column width="180px" align="center" label="时间">
           <template slot-scope="scope">
             <span>{{ scope.row.modifyTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column :show-overflow-tooltip="true" max-width="500px" align="left" label="标题">
+        <el-table-column :show-overflow-tooltip="true" min-width="250px" align="left" label="标题">
           <template slot-scope="scope">
             <router-link :to="{path: '/notice/'+scope.row.articleId}" class="link-type" target="_blank">
-              <span>{{ scope.row.title }}</span>
+              <span><svg-icon v-if="scope.row.upload===1" icon-class="uploadSvg" />{{ scope.row.title }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column width="300px" align="left" label="附件">
+        <el-table-column align="center" width="80px" label="状态">
           <template slot-scope="scope">
-            <span v-if="scope.row.articleAttachment && scope.row.articleAttachment.attachmentName" class="el-tag el-tag--info el-tag--small">
-              <a class="link-type" @click="download(scope.row.articleAttachment.url, scope.row.articleAttachment.attachmentName)">{{ scope.row.articleAttachment.attachmentName }}</a>
-              <i class="el-tag__close el-icon-close" @click="deleteAttachment(scope.row)"/>
-            </span>
+            <el-tag v-if="scope.row.status==0" :type="scope.row.status | statusFilter">草稿</el-tag>
+            <el-tag v-if="scope.row.status==1" :type="scope.row.status | statusFilter" class="link-type"><span @click="showUploadData(scope.row)">已发布</span></el-tag>
+            <el-tag v-if="scope.row.status==2" :type="scope.row.status | statusFilter">关闭</el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('action')" align="center" width="150">
+        <el-table-column :show-overflow-tooltip="true" max-width="400px" align="left" label="附件">
           <template slot-scope="scope">
-            <el-button style="margin:5px;float:right">
+            <span v-if="scope.row.articleAttachment && scope.row.articleAttachment.attachmentName" class="el-tag el-tag--info el-tag--small">
+              <i class="el-tag__close el-icon-close" @click="deleteAttachment(scope.row)"/>
+              <a class="link-type" @click="download(scope.row.articleAttachment.url, scope.row.articleAttachment.attachmentName)">{{ scope.row.articleAttachment.attachmentName }}</a>
+            </span>
+            <el-upload
+              v-else-if="scope.row.upload===1"
+              :action="importFileUrl"
+              :on-remove="handleRemove"
+              :data="uploadData"
+              :on-preview="handlePreview"
+              :on-exceed="handleExceed"
+              :on-success="handleSuccess"
+              :file-list="scope.row.attachmentList"
+              :show-file-list="false"
+              name="file"
+            ><el-button size="mini" @click="handleUpdate(scope.row)"><i class="el-icon-upload el-icon--right"/>上传</el-button>
+
+            </el-upload>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('action')" align="left" width="210">
+          <template slot-scope="scope">
+            <router-link :to="'/notice/edit/'+scope.row.articleId">
+              <el-button size="mini" type="primary" @click="handleUpdate(scope.row, scope.$index, true)">编辑</el-button>
+            </router-link>
+            <el-button size="mini" type="success" @click="updateSend(scope.row)">发布</el-button>
+            <el-button size="mini" type="danger" @click="deleteArticle(scope.row)">删除</el-button>
+            <!--<el-button style="margin:5px;float:right">
               <el-dropdown class="avatar-container right-menu-item" trigger="click">
                 <i style="cursor:pointer" class="el-icon-caret-bottom"/>
                 <el-dropdown-menu slot="dropdown">
@@ -59,23 +85,7 @@
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
-            </el-button>
-            <el-upload
-              v-if="scope.row.upload===1"
-              :action="importFileUrl"
-              :on-remove="handleRemove"
-              :data="uploadData"
-              :on-preview="handlePreview"
-              :on-exceed="handleExceed"
-              :on-success="handleSuccess"
-              :file-list="scope.row.attachmentList"
-              :show-file-list="false"
-              style="float:left;margin:5px;"
-              name="file"
-            ><el-button size="mini" @click="handleUpdate(scope.row)"><i class="el-icon-upload el-icon--right"/>上传</el-button>
-
-            </el-upload>
-
+            </el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -97,7 +107,7 @@
 </template>
 
 <script>
-import { fetchList, deleteArticle } from '@/api/article'
+import { fetchList, deleteArticle, saveArticle } from '@/api/article'
 import { downloadFile, deleteAttachment } from '@/api/user'
 import uploadUser from '@/views/notice/uploadUser'
 
@@ -108,7 +118,10 @@ export default {
       const statusMap = {
         published: 'success',
         draft: 'info',
-        deleted: 'danger'
+        deleted: 'danger',
+        1: 'success',
+        0: 'info',
+        2: 'danger'
       }
       return statusMap[status]
     }
@@ -146,7 +159,7 @@ export default {
   },
   methods: {
     deleteArticle(row) {
-      deleteArticle(row.id).then(() => {
+      deleteArticle(row.articleId).then(() => {
         fetchList(this.listQuery).then(response => {
           this.list = response.data.result.list
           this.total = response.data.result.total
@@ -160,18 +173,20 @@ export default {
       downloadFile(url, name)
     },
     showUploadData(item) {
+      // 支持上传查看上传信息，否则查看已经查看该消息的用户列表
       this.$refs.uploadUser.handleModifyStatus(item)
     },
     deleteAttachment(row) {
       this.$confirm('您确定删除吗？').then(_ => {
+        row.articleAttachment.url = undefined
+        row.articleAttachment.attachmentName = undefined
         deleteAttachment(row.articleAttachment).then(() => {
-          row.articleAttachment = undefined
         })
       }).catch(_ => {
       })
     },
     handleUpdate(row) {
-      this.uploadData.noticeId = row.id
+      this.uploadData.noticeId = row.articleId
       this.selectRow = row
     },
     getList() {
@@ -211,6 +226,13 @@ export default {
     },
     handleExceed(files, attachmentList) {
       this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + attachmentList.length} 个文件`)
+    },
+    updateSend(row) {
+      row.status = 1
+      row.receiverList = undefined
+      saveArticle(row).then(() => {
+
+      })
     }
   }
 }

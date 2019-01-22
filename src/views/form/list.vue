@@ -115,7 +115,8 @@ export default {
     return {
       importFileUrl: window.UEDITOR_HOME_URL + 'ueditor/importFile',
       uploadData: {
-        noticeId: undefined
+        noticeId: undefined,
+        unread: undefined
       },
       attachmentList: [
         { name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100' }],
@@ -163,13 +164,14 @@ export default {
     deleteAttachment(row) {
       this.$confirm('您确定删除吗？').then(_ => {
         deleteAttachment(row.articleAttachment).then(() => {
-          row.articleAttachment = undefined
+        //  row.articleAttachment = undefined
         })
       }).catch(_ => {
       })
     },
     handleUpdate(row) {
       this.uploadData.noticeId = row.id
+      this.uploadData.unread = row.unread
       this.selectRow = row
     },
     getList() {

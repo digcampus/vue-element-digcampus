@@ -108,7 +108,7 @@
               <el-tooltip placement="left-start">
                 <div slot="content">电话: {{ item.tel== null? '无' : item.tel }}</div>
                 <span class="el-tag el-tag--info el-tag--small" style="float:left;">
-                  <span class="link-type" @click="handleEditClass(scope.row)"><svg-icon v-if="item.openid" icon-class="weixin"/>{{ item.name }} {{ item.role ? '(' + item.role + ')' : '' }} </span>
+                  <span class="link-type" @click="handleEditClass(scope.row)"><svg-icon v-if="item.openid" icon-class="weixin"/>{{ item.realname }} {{ item.role ? '(' + item.role + ')' : '' }} </span>
                 </span>
               </el-tooltip>
             </div>
@@ -188,7 +188,7 @@
                 trigger="click">
                 <el-form :model="formLabelAlign" label-position="right" label-width="60px">
                   <el-form-item label="姓名">
-                    <el-input v-model="formLabelAlign.name"/>
+                    <el-input v-model="formLabelAlign.realname"/>
                   </el-form-item>
                   <el-form-item label="角色">
                     <el-input v-model="formLabelAlign.role"/>
@@ -203,7 +203,7 @@
                 </el-form>
                 <div slot="reference">
                   <span class="el-tag el-tag--info el-tag--small" style="float:left;">
-                    <span class="link-type" @click="editParent(item)"><svg-icon v-if="item.openid" icon-class="weixin"/>{{ item.role }} ({{ item.name }}-{{ item.tel }})</span>
+                    <span class="link-type" @click="editParent(item)"><svg-icon v-if="item.openid" icon-class="weixin"/>{{ item.role }} ({{ item.realname }}-{{ item.tel }})</span>
                     <i v-if="!disabled" class="el-tag__close el-icon-close" @click="deleteParent(index)"/>
                   </span>
                 </div>

@@ -337,5 +337,24 @@ export const asyncRouterMap = [
     ]
   },
   { path: '*', redirect: '/404', hidden: true },
+  {
+    path: '/message',
+    component: Layout,
+    redirect: '/message/list',
+    name: 'Message',
+    meta: {
+      title: 'message',
+      icon: 'example'
+    },
+    hidden: true,
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/message/list'),
+        name: 'NoticeList',
+        meta: { title: '消息列表', icon: 'list' }
+      }
+    ]
+  },
   tableRouter
 ]

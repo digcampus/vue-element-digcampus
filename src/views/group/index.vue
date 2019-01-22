@@ -85,7 +85,7 @@
         </el-table-column>
         <el-table-column label="姓名" min-width="30%" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.realname }}</span>
           </template>
         </el-table-column>
         <el-table-column label="角色" min-width="30%" align="center">
