@@ -4,9 +4,6 @@
       <el-form-item label="年级名称" prop="name">
         <el-input v-model="temp.name"/>
       </el-form-item>
-      <el-form-item label="年级别名">
-        <el-input v-model="temp.showName"/>
-      </el-form-item>
       <el-form-item label="状态" prop="graduationStatus">
         <el-select v-model="temp.graduationStatus" filterable class="filter-item" placeholder="Please select" style="width: 100%;">
           <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
@@ -26,8 +23,8 @@
                   <el-input v-model="formLabelAlign.name"/>
                 </el-form-item>
                 <el-form-item label="班主任">
-                  <el-select v-model="formLabelAlign.teacher" value-key="uid" filterable class="filter-item" placeholder="Please select" style="width: 100%;">
-                    <el-option v-for="item in teacherList" :key="item.uid" :label="item.name" :value="item"/>
+                  <el-select v-model="formLabelAlign.teacher" value-key="uid" filterable class="filter-item" style="width: 100%;">
+                    <el-option v-for="item in teacherList" :key="item.uid" :label="item.realname" :value="item"/>
                   </el-select>
                 </el-form-item>
                 <div style="text-align: right; margin: 0">
@@ -37,7 +34,7 @@
               </el-form>
               <div slot="reference">
                 <span class="el-tag el-tag--info el-tag--small" style="float:left;">
-                  <span class="link-type" @click="editParent(item)">{{ item.name }} (班主任: {{ item.teacher.name }})</span>
+                  <span class="link-type" @click="editParent(item)">{{ item.name }} (班主任: {{ item.teacher.realname }})</span>
                   <i v-if="!disabled" class="el-tag__close el-icon-close" @click="deleteParent(index)"/>
                 </span>
               </div>
@@ -55,7 +52,7 @@
             </el-form-item>
             <el-form-item label="班主任">
               <el-select v-model="formLabelAlign.teacher" value-key="uid" filterable class="filter-item" style="width: 100%;">
-                <el-option v-for="item in teacherList" :key="item.uid" :label="item.name" :value="item"/>
+                <el-option v-for="item in teacherList" :key="item.uid" :label="item.realname" :value="item"/>
               </el-select>
             </el-form-item>
             <div style="text-align: right; margin: 0">

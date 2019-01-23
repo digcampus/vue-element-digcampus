@@ -86,7 +86,7 @@
       </el-table-column>
       <el-table-column label="执教班级" min-width="250" align="center">
         <template slot-scope="scope">
-          <div v-for="(item,index) in scope.row.classMap" v-if="index%2 != 1" :gutter="1" :key="item.id" class="link-type row-bg" style="text-overflow:ellipsis;" type="flex" justify="left" @click="handleUpdate(scope.row, false)">
+          <div v-for="(item,index) in scope.row.classMap" v-if="index%2 != 1" :gutter="1" :key="item.id" class="row-bg" style="text-overflow:ellipsis;" type="flex" justify="left">
             <el-tag v-if="index%2 != 1" style="float:left;margin:2px;" >{{ item.className }}({{ item.courseName }})</el-tag>
             <el-tag v-if="scope.row.classMap[index+1] != null" style="float:left;margin:2px;">{{ scope.row.classMap[index+1].className }}({{ scope.row.classMap[index+1].courseName }})</el-tag>
           </div>
@@ -110,35 +110,72 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog :visible.sync="dialogFormVisible" :title="textMap[dialogStatus]" append-to-body width="40%">
-      <el-form ref="dataForm" :disabled="disabled" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="编号" prop="code">
-          <el-input v-model="temp.code"/>
-        </el-form-item>
-        <el-form-item label="姓名" prop="realname">
-          <el-input v-model="temp.realname"/>
-        </el-form-item>
-        <el-form-item label="登录名" prop="username">
-          <el-input v-model="temp.username" placeholder="默认为姓名"/>
-        </el-form-item>
-        <el-form-item label="手机号码" prop="tel">
-          <el-input v-model="temp.tel"/>
-        </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-select v-model="temp.sex" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="执教课程">
-          <el-row v-for="(item,index) in temp.classMap" :gutter="10" :key="item.id" type="flex" class="row-bg" justify="left" style="margin-top:5px;">
-            <el-col :span="12">
+    <el-dialog :visible.sync="dialogFormVisible" :title="textMap[dialogStatus]" append-to-body width="60%">
+      <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
+        <el-tab-pane label="执教班级" name="first">
+          <el-form ref="dataForm" :disabled="disabled" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+            <el-form-item label="编号" prop="code">
+              <el-input v-model="temp.code"/>
+            </el-form-item>
+            <el-form-item label="姓名" prop="realname">
+              <el-input v-model="temp.realname"/>
+            </el-form-item>
+            <el-form-item label="登录名" prop="username">
+              <el-input v-model="temp.username" placeholder="默认为姓名"/>
+            </el-form-item>
+            <el-form-item label="手机号码" prop="tel">
+              <el-input v-model="temp.tel"/>
+            </el-form-item>
+            <el-form-item label="性别" prop="sex">
+              <el-select v-model="temp.sex" class="filter-item" placeholder="Please select">
+                <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="执教课程">
+              <el-row v-for="(item,index) in temp.classMap" :gutter="10" :key="item.id" type="flex" class="row-bg" justify="left" style="margin-top:5px;">
+                <el-col :span="12">
+                  <el-popover
+                    :disabled="disabled"
+                    v-model="temp.classMap[index].visiblePopover"
+                    placement="top"
+                    width="300"
+                    trigger="click">
+                    <el-form :model="formLabelAlign" label-position="left" label-width="60px">
+                      <el-form-item label="班级">
+                        <el-cascader
+                          v-model="formLabelAlign.classId"
+                          :options="gradeList"
+                          :props="props"
+                          clearable
+                          expand-trigger="hover"
+                          style="width: 100%;"
+                          @change="handleChange"/>
+                      </el-form-item>
+                      <el-form-item label="课程">
+                        <el-select v-model="formLabelAlign.course" value-key="id" filterable class="filter-item" style="width: 100%;">
+                          <el-option v-for="item in courseList" :key="item.id" :label="item.name" :value="item"/>
+                        </el-select>
+                      </el-form-item>
+                      <div style="text-align: right; margin: 0">
+                        <el-button size="mini" type="text" @click="temp.classMap[index].visiblePopover = false">取消</el-button>
+                        <el-button type="primary" size="mini" @click="updateParent(index)">确定</el-button>
+                      </div>
+                    </el-form>
+                    <div slot="reference">
+                      <span class="el-tag el-tag--info el-tag--small" style="float:left;">
+                        <span class="link-type" @click="editParent(item)">{{ item.className }} ({{ item.courseName }})</span>
+                        <i v-if="!disabled" class="el-tag__close el-icon-close" @click="deleteParent(index)"/>
+                      </span>
+                    </div>
+                  </el-popover>
+                </el-col>
+              </el-row>
               <el-popover
-                :disabled="disabled"
-                v-model="temp.classMap[index].visiblePopover"
+                v-model="formLabelAlign.visiblePopover"
                 placement="top"
                 width="300"
                 trigger="click">
-                <el-form :model="formLabelAlign" label-position="left" label-width="60px">
+                <el-form ref="popoverForm" :model="formLabelAlign" label-position="right" label-width="60px">
                   <el-form-item label="班级">
                     <el-cascader
                       v-model="formLabelAlign.classId"
@@ -155,57 +192,27 @@
                     </el-select>
                   </el-form-item>
                   <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="temp.classMap[index].visiblePopover = false">取消</el-button>
-                    <el-button type="primary" size="mini" @click="updateParent(index)">确定</el-button>
+                    <el-button size="mini" type="text" @click="formLabelAlign.visiblePopover = false">取消</el-button>
+                    <el-button type="primary" size="mini" @click="updateParent(-1)">确定</el-button>
                   </div>
                 </el-form>
-                <div slot="reference">
-                  <span class="el-tag el-tag--info el-tag--small" style="float:left;">
-                    <span class="link-type" @click="editParent(item)">{{ item.className }} ({{ item.courseName }})</span>
-                    <i v-if="!disabled" class="el-tag__close el-icon-close" @click="deleteParent(index)"/>
-                  </span>
-                </div>
+                <el-button slot="reference" icon="el-icon-circle-plus-outline" size="mini" round @click="createParent()">添加</el-button>
               </el-popover>
-            </el-col>
-          </el-row>
-          <el-popover
-            v-model="formLabelAlign.visiblePopover"
-            placement="top"
-            width="300"
-            trigger="click">
-            <el-form ref="popoverForm" :model="formLabelAlign" label-position="right" label-width="60px">
-              <el-form-item label="班级">
-                <el-cascader
-                  v-model="formLabelAlign.classId"
-                  :options="gradeList"
-                  :props="props"
-                  clearable
-                  expand-trigger="hover"
-                  style="width: 100%;"
-                  @change="handleChange"/>
-              </el-form-item>
-              <el-form-item label="课程">
-                <el-select v-model="formLabelAlign.course" value-key="id" filterable class="filter-item" style="width: 100%;">
-                  <el-option v-for="item in courseList" :key="item.id" :label="item.name" :value="item"/>
-                </el-select>
-              </el-form-item>
-              <div style="text-align: right; margin: 0">
-                <el-button size="mini" type="text" @click="formLabelAlign.visiblePopover = false">取消</el-button>
-                <el-button type="primary" size="mini" @click="updateParent(-1)">确定</el-button>
-              </div>
-            </el-form>
-            <el-button slot="reference" icon="el-icon-circle-plus-outline" size="mini" round @click="createParent()">添加</el-button>
-          </el-popover>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')">
-          <el-date-picker v-model="temp.enrollmentDate" type="date"/>
-        </el-form-item>
-        <el-form-item :label="$t('table.status')">
-          <el-select v-model="temp.teacherStatus" class="filter-item">
-            <el-option v-for="item in statusOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
-          </el-select>
-        </el-form-item>
-      </el-form>
+            </el-form-item>
+            <el-form-item :label="$t('table.date')">
+              <el-date-picker v-model="temp.enrollmentDate" type="date"/>
+            </el-form-item>
+            <el-form-item :label="$t('table.status')">
+              <el-select v-model="temp.teacherStatus" class="filter-item">
+                <el-option v-for="item in statusOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="课程表" name="second">
+          <scheduleTab v-if="hackReset" :class-id="classId" :teacher-id="temp.uid" :type="false" style="margin-top:-20px;"/>
+        </el-tab-pane>
+      </el-tabs>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
         <el-button v-if="dialogStatus=='create' && !disabled" type="primary" @click="createData">{{ $t('table.confirm') }}</el-button>
@@ -220,6 +227,7 @@
 import { fetchTeacherList, fetchPv, updateTeacher, deleteTeacher, fetchGradeList, fetchCourseList, addCourseClass } from '@/api/user'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
+import scheduleTab from '@/views/grade/scheduleTab'
 
 const calendarTypeOptions = [
   { key: 0, display_name: '男' },
@@ -240,6 +248,9 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
+  components: {
+    scheduleTab
+  },
   directives: {
     waves
   },
@@ -276,6 +287,8 @@ export default {
   },
   data() {
     return {
+      hackReset: false,
+      activeName: 'first',
       tableKey: 0,
       list: null,
       allList: [],
@@ -606,9 +619,12 @@ export default {
         this.temp.enrollmentDate = new Date(this.temp.enrollmentDate)
       }
       this.dialogStatus = 'update'
+      this.hackReset = false
       this.dialogFormVisible = true
+      this.activeName = 'first'
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
+        this.hackReset = true
       })
     },
     updateData() {

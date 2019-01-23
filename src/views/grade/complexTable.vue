@@ -21,16 +21,13 @@
       </el-table-column>
       <el-table-column label="年级名称" width="150px" align="center">
         <template slot-scope="scope">
-          <el-tooltip placement="left" effect="light">
-            <div slot="content">{{ scope.row.showName }}</div>
-            <span>{{ scope.row.name }}</span>
-          </el-tooltip>
+          <span class="link-type" @click="handleUpdate(scope.row, scope.$index, true)">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="班级信息" min-width="150px">
         <template slot-scope="scope">
           <span v-for="item in scope.row.clazzList" :key="item.id" class="el-tag el-tag--info el-tag--small" style="margin-left:5px;">
-            <span class="link-type" @click="handleEditClass(item)">{{ item.name }}(班主任:{{ item.teacher.name }})</span>
+            <span class="link-type" @click="handleEditClass(item)">{{ item.name }}(班主任:{{ item.teacher.realname }})</span>
           </span>
         </template>
       </el-table-column>
@@ -40,11 +37,10 @@
           <el-tag v-else>在读</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column v-if="$store.state.user.admin" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-if="$store.state.user.admin" type="primary" size="mini" @click="handleUpdate(scope.row, scope.$index, false)">{{ $t('table.edit') }}</el-button>
-          <el-button size="mini" type="success" @click="handleUpdate(scope.row, scope.$index, true)">查看</el-button>
-          <el-button v-if="$store.state.user.admin" size="mini" type="danger" @click="deleteGrade(scope.row)">{{ $t('table.delete') }}
+          <el-button type="primary" size="mini" @click="handleUpdate(scope.row, scope.$index, false)">{{ $t('table.edit') }}</el-button>
+          <el-button size="mini" type="danger" @click="deleteGrade(scope.row)">{{ $t('table.delete') }}
           </el-button>
         </template>
       </el-table-column>
@@ -84,17 +80,6 @@
         <el-button v-else type="primary" @click="updateData">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel"/>
-        <el-table-column prop="pv" label="Pv"/>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
-      </span>
-    </el-dialog>
-
     <edit-grade ref="editGrade" @listenToChildEvent="updateGradeRow"/>
     <edit-class ref="showClass"/>
   </div>
