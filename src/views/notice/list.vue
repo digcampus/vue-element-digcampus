@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { fetchList, deleteArticle, saveArticle } from '@/api/article'
+import { fetchList, deleteArticle, publishArticle } from '@/api/article'
 import { downloadFile, deleteAttachment } from '@/api/user'
 import uploadUser from '@/views/notice/uploadUser'
 
@@ -229,8 +229,7 @@ export default {
     },
     updateSend(row) {
       row.status = 1
-      row.receiverList = undefined
-      saveArticle(row).then(() => {
+      publishArticle(row).then(() => {
 
       })
     }

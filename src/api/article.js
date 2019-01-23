@@ -53,3 +53,11 @@ export function deleteArticle(id) {
     method: 'get'
   })
 }
+
+export function publishArticle(data) {
+  return request({
+    url: '/ueditor/publish',
+    method: 'post',
+    data
+  })
+}

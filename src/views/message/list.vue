@@ -255,7 +255,6 @@ export default {
         return
       }
       this.selectRow.attachmentList = []
-      debugger
       this.selectRow.articleAttachment = response
       this.showReviewer = true
     },
