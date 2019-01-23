@@ -114,38 +114,6 @@ export default new Router({
 
 export const asyncRouterMap = [
   {
-    path: '/notice',
-    component: Layout,
-    redirect: '/notice/list',
-    name: 'Notice',
-    meta: {
-      title: 'notice',
-      icon: 'example'
-    },
-    children: [
-      {
-        path: 'create',
-        component: () => import('@/views/components-demo/uEditor'),
-        name: 'CreateNotice',
-        meta: { title: 'createNotice', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/components-demo/uEditor'),
-        name: 'EditNotice',
-        meta: { title: '公告编辑', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'list',
-        component: () => import('@/views/notice/list'),
-        name: 'NoticeList',
-        meta: { title: 'noticeList', icon: 'list' }
-      }
-    ]
-  },
-
-  {
     path: '/laoshiguanli',
     component: Layout,
     children: [
@@ -353,6 +321,37 @@ export const asyncRouterMap = [
         component: () => import('@/views/message/list'),
         name: 'NoticeList',
         meta: { title: '消息列表', icon: 'list' }
+      }
+    ]
+  },
+  {
+    path: '/article',
+    component: Layout,
+    redirect: '/article/list',
+    name: 'Notice',
+    meta: {
+      title: 'notice',
+      icon: 'example'
+    },
+    children: [
+      {
+        path: 'create',
+        component: () => import('@/views/article/create'),
+        name: 'CreateNotice',
+        meta: { title: 'createNotice', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/article/edit'),
+        name: 'EditNotice',
+        meta: { title: '公告编辑', noCache: true },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/article/list'),
+        name: 'NoticeList',
+        meta: { title: 'noticeList', icon: 'list' }
       }
     ]
   },
