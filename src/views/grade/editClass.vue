@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogFormVisible" title="班级信息" width="60%" >
+  <el-dialog :visible.sync="dialogFormVisible" :title="className" width="60%" >
     <el-tabs type="border-card" style="height: 600px;">
       <el-tab-pane label="班级学生">
         <studentComplexTable v-if="hackReset" :table-height="420 + 'px'" :class-id="classId" :type="false" style="margin-top:-20px;"/>

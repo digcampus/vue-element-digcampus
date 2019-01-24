@@ -226,7 +226,6 @@ export default {
     saveUEContent: function() {
       this.$refs['article'].validate((valid) => {
         if (valid) {
-          debugger
           saveArticle(this.article).then(() => {
             this.$notify({
               title: '成功',

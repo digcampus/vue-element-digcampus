@@ -20,7 +20,7 @@
           </el-form-item>
           <el-form-item label="教师名称" prop="name">
             <el-select v-model="courseData.teacher" value-key="uid" filterable class="filter-item" style="width: 100%;">
-              <el-option v-for="item in allList" :key="item.uid" :label="item.name" :value="item"/>
+              <el-option v-for="item in allList" :key="item.uid" :label="item.realname" :value="item"/>
             </el-select>
           </el-form-item>
           <div style="text-align: right; margin: 0">
@@ -210,7 +210,7 @@
           </el-form>
         </el-tab-pane>
         <el-tab-pane label="课程表" name="second">
-          <scheduleTab v-if="hackReset" :class-id="classId" :teacher-id="temp.uid" :type="false" style="margin-top:-20px;"/>
+          <scheduleTab v-if="hackReset" :teacher-id="temp.uid" :type="false" style="margin-top:-20px;"/>
         </el-tab-pane>
       </el-tabs>
       <div slot="footer" class="dialog-footer">

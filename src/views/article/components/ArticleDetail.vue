@@ -29,9 +29,17 @@
     </el-form>
 
     <el-dialog :visible.sync="dialogFormVisible" title="收件人">
-      <el-button type="success" size="mini" style="margin-top:-150px;" @click="selectUser">
-        添加收件人
+      <el-button :disabled="(article.receiverList.length>0 && selectIndex && selectIndex != 1) || selectTeacher || selectStudent" type="info" plain size="mini" style="margin-top:-150px;" @click="selectUser(1)">
+        添加教师或学生
       </el-button>
+      <el-button :disabled="(article.receiverList.length>0 && selectIndex && selectIndex != 2) || selectTeacher || selectStudent" type="info" plain size="mini" style="margin-top:-150px;" @click="selectUser(2)">
+        添加班级
+      </el-button>
+      <el-button :disabled="(article.receiverList.length>0 && selectIndex && selectIndex != 3) || selectTeacher || selectStudent" type="info" plain size="mini" style="margin-top:-150px;" @click="selectUser(3)">
+        添加群组
+      </el-button>
+      <el-checkbox v-model="selectTeacher" :disabled="article.receiverList.length>0 && selectIndex && selectIndex < 4" class="filter-item" style="margin-left:15px;" @change="selectIndex=4">全体老师</el-checkbox>
+      <el-checkbox v-model="selectStudent" :disabled="article.receiverList.length>0 && selectIndex && selectIndex < 4" class="filter-item" @change="selectIndex=5">全体学生</el-checkbox>
       <el-table
         :data="article.receiverList"
         :height="300"
@@ -65,7 +73,7 @@
       </span>
     </el-dialog>
 
-    <showUser v-if="hackReset" ref="showUser" @listenToChildEvent="getSelectUser"/>
+    <showUser v-if="hackReset" ref="showUser" :index="selectIndex" @listenToChildEvent="getSelectUser"/>
   </div>
 </template>
 <script>
@@ -79,7 +87,7 @@ import { saveArticle, fetchArticle } from '@/api/article'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 import { fetchTeacherList, fetchGroupList } from '@/api/user'
-import showUser from '@/views/notice/showUser'
+import showUser from '@/views/article/showUser'
 
 export default {
   name: 'ArticleDetail',
@@ -92,12 +100,15 @@ export default {
   },
   data() {
     return {
+      selectTeacher: false,
+      selectStudent: false,
       loading: false,
       hackReset: false,
       disabled: false,
       dialogFormVisible: false,
       userList: [],
       articleId: this.$route.params.id,
+      selectIndex: undefined,
       article: {
         articleId: undefined,
         fid: this.$store.state.user.fid,
@@ -152,12 +163,21 @@ export default {
     },
     getSelectUser: function(data) {
       var tempList = []
-      var userList = data.get('user')
+      var userList = data.get('teacher')
+      var userReceiver = {}
       for (var index in userList) {
-        var userReceiver = {}
+        userReceiver = {}
         userReceiver.uid = userList[index].uid
         userReceiver.realname = userList[index].realname
         userReceiver.roles = [1]
+        tempList.push(userReceiver)
+      }
+      userList = data.get('student')
+      for (index in userList) {
+        userReceiver = {}
+        userReceiver.uid = userList[index].uid
+        userReceiver.realname = userList[index].realname
+        userReceiver.roles = [2]
         tempList.push(userReceiver)
       }
       var groupList = data.get('group')
@@ -184,10 +204,11 @@ export default {
     showSelectUser() {
       this.dialogFormVisible = true
     },
-    selectUser() {
+    selectUser(index) {
+      this.selectIndex = index
       this.hackReset = false
       if (this.$refs.showUser) {
-        this.$refs.showUser.handleModifyStatus()
+        this.$refs.showUser.handleModifyStatus(index)
       }
       this.$nextTick(() => {
         this.hackReset = true

@@ -77,32 +77,6 @@ export const constantRouterMap = [
         meta: { title: 'dashboard', icon: 'dashboard', noCache: true }
       }
     ]
-  },
-  {
-    path: '/documentation',
-    component: Layout,
-    redirect: '/documentation/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
-        meta: { title: 'documentation', icon: 'documentation', noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/guide/index'),
-        name: 'Guide',
-        meta: { title: 'guide', icon: 'guide', noCache: true }
-      }
-    ]
   }
 ]
 
@@ -114,6 +88,37 @@ export default new Router({
 
 export const asyncRouterMap = [
   {
+    path: '/article',
+    component: Layout,
+    redirect: '/article/list',
+    name: 'Notice',
+    meta: {
+      title: 'notice',
+      icon: 'example'
+    },
+    children: [
+      {
+        path: 'create',
+        component: () => import('@/views/article/create'),
+        name: 'CreateNotice',
+        meta: { title: 'createNotice', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/article/edit'),
+        name: 'EditNotice',
+        meta: { title: '公告编辑', noCache: true },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/article/list'),
+        name: 'NoticeList',
+        meta: { title: 'noticeList', icon: 'list' }
+      }
+    ]
+  },
+  {
     path: '/laoshiguanli',
     component: Layout,
     children: [
@@ -122,18 +127,6 @@ export const asyncRouterMap = [
         component: () => import('@/views/teacher/complexTable'),
         name: 'laoshiguanli',
         meta: { title: 'laoshiguanli', icon: 'laoshiguanli' }
-      }
-    ]
-  },
-  {
-    path: '/nianjiguanli',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/grade/complexTable'),
-        name: 'nianjiguanli',
-        meta: { title: 'nianjiguanli', icon: 'nianjiguanli' }
       }
     ]
   },
@@ -150,14 +143,14 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/myclass',
+    path: '/nianjiguanli',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/myclass/index'),
-        name: '执教班级',
-        meta: { title: '执教班级', icon: 'tab' }
+        component: () => import('@/views/grade/complexTable'),
+        name: 'nianjiguanli',
+        meta: { title: 'nianjiguanli', icon: 'nianjiguanli' }
       }
     ]
   },
@@ -325,33 +318,14 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/article',
+    path: '/myclass',
     component: Layout,
-    redirect: '/article/list',
-    name: 'Notice',
-    meta: {
-      title: 'notice',
-      icon: 'example'
-    },
     children: [
       {
-        path: 'create',
-        component: () => import('@/views/article/create'),
-        name: 'CreateNotice',
-        meta: { title: 'createNotice', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/article/edit'),
-        name: 'EditNotice',
-        meta: { title: '公告编辑', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'list',
-        component: () => import('@/views/article/list'),
-        name: 'NoticeList',
-        meta: { title: 'noticeList', icon: 'list' }
+        path: 'index',
+        component: () => import('@/views/myclass/index'),
+        name: '执教班级',
+        meta: { title: '执教班级', icon: 'tab' }
       }
     ]
   },

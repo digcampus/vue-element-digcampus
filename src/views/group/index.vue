@@ -14,6 +14,10 @@
       highlight-current-row
       style="width:100%;overflow:auto;"
       @selection-change="handleSelectionChange">
+      <el-table-column
+        :reserve-selection="true"
+        type="selection"
+        width="35"/>
       <el-table-column :label="$t('id')" align="center" width="60px">
         <template slot-scope="scope">
           <span>{{ (listQuery.page-1) * listQuery.limit + scope.$index + 1 }}</span>
@@ -39,7 +43,7 @@
           <span>{{ scope.row.comment }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="80px" class-name="small-padding fixed-width">
+      <el-table-column v-if="type" :label="$t('table.actions')" align="center" width="80px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button>
             <el-dropdown class="avatar-container right-menu-item" trigger="click">
