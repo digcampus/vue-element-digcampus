@@ -38,7 +38,7 @@
           <span>{{ scope.$index+1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="学生姓名" width="100px" align="center">
+      <el-table-column label="学生姓名" width="90px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.realname }}</span>
         </template>
@@ -48,7 +48,7 @@
           <span>{{ scope.row.stuNo }}</span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="身份证号" width="180px" align="center">
+      <el-table-column :show-overflow-tooltip="true" label="身份证号" width="170px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.idCard }}</span>
         </template>
@@ -73,7 +73,7 @@
           <span>{{ scope.row.role }}</span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="家庭地址" min-width="220px">
+      <el-table-column :show-overflow-tooltip="true" label="家庭地址" min-width="180px">
         <template slot-scope="scope">
           <span class="link-type" style="text-overflow:ellipsis;" @click="handleUpdate(scope.row, true)">{{ scope.row.address }}</span>
         </template>
@@ -115,7 +115,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="60">
+      <el-table-column v-if="!classId" :label="$t('table.actions')" align="center" width="60">
         <template slot-scope="scope">
           <el-dropdown class="avatar-container right-menu-item" trigger="click">
             <el-button style="cursor:pointer" class="el-icon-caret-bottom"/>
@@ -124,7 +124,7 @@
                 <span style="display:block;" @click="handleUpdate(scope.row, false)">{{ $t('edit') }}</span>
               </el-dropdown-item>
               <el-dropdown-item divided>
-                <span v-if="!classId" style="display:block;" @click="handleDelete(scope.row,'deleted')">{{ $t('delete') }}</span>
+                <span style="display:block;" @click="handleDelete(scope.row,'deleted')">{{ $t('delete') }}</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>

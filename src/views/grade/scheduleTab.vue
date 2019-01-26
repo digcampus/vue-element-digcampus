@@ -103,8 +103,6 @@ export default {
       listLoading: true,
       listQuery: {
         fid: this.$store.state.user.fid,
-        year: 2018,
-        semester: 2,
         classId: this.classId,
         teacherId: this.teacherId,
         importance: undefined,

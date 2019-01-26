@@ -2,8 +2,6 @@
   <div class="app-container">
     <div class="filter-container">
       <el-button v-if="$store.state.user.admin" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate()">{{ $t('table.add') }}</el-button>
-      <el-checkbox class="filter-item">全体老师</el-checkbox>
-      <el-checkbox class="filter-item">全体学生</el-checkbox>
     </div>
 
     <el-table
@@ -215,11 +213,17 @@ export default {
       row.status = status
     },
     deleteGrade(row) {
-      deleteGrade(row.id).then(response => {
-        fetchGradeList(this.listQuery).then(response => {
-          this.list = response.data.result.list
-          this.total = response.data.result.total
+      this.$confirm('您确定删除吗？',
+        {
+          type: 'warning'
+        }).then(_ => {
+        deleteGrade(row.id).then(response => {
+          fetchGradeList(this.listQuery).then(response => {
+            this.list = response.data.result.list
+            this.total = response.data.result.total
+          })
         })
+      }).catch(_ => {
       })
     },
     resetTemp() {

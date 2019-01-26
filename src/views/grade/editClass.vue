@@ -2,7 +2,7 @@
   <el-dialog :visible.sync="dialogFormVisible" :title="className" width="60%" >
     <el-tabs type="border-card" style="height: 600px;">
       <el-tab-pane label="班级学生">
-        <studentComplexTable v-if="hackReset" :table-height="420 + 'px'" :class-id="classId" :type="false" style="margin-top:-20px;"/>
+        <studentComplexTable v-if="hackReset" :table-height="470 + 'px'" :class-id="classId" :type="false" style="margin-top:-20px;"/>
       </el-tab-pane>
       <el-tab-pane label="任课老师">
         <teacherComplexTable v-if="hackReset" :table-height="500 + 'px'" :class-id="classId" :class-name="className" :type="false" style="margin-top:-20px;"/>

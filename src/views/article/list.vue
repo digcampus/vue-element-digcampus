@@ -177,7 +177,10 @@ export default {
       this.$refs.uploadUser.handleModifyStatus(item)
     },
     deleteAttachment(row) {
-      this.$confirm('您确定删除吗？').then(_ => {
+      this.$confirm('您确定删除吗？',
+        {
+          type: 'warning'
+        }).then(_ => {
         row.articleAttachment.url = undefined
         row.articleAttachment.attachmentName = undefined
         deleteAttachment(row.articleAttachment).then(() => {

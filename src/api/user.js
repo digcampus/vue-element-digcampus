@@ -246,3 +246,11 @@ export function updateAttachment(data) {
     data
   })
 }
+
+export function fetchSemester(query) {
+  return request({
+    url: '/semester/index',
+    method: 'get',
+    params: query
+  })
+}
