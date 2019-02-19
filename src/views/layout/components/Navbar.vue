@@ -3,30 +3,21 @@
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
 
     <breadcrumb class="breadcrumb-container"/>
-
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <search class="right-menu-item" />
-
-        <error-log class="errLog-container right-menu-item hover-effect"/>
-
-        <screenfull class="right-menu-item hover-effect"/>
-
-        <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
-          <size-select class="right-menu-item hover-effect"/>
-        </el-tooltip>
-
-        <lang-select class="right-menu-item hover-effect"/>
-
-        <el-tooltip :content="$t('navbar.theme')" effect="dark" placement="bottom">
-          <theme-picker class="right-menu-item hover-effect"/>
+        <error-log class="errLog-container right-menu-item"/>
+        <el-tooltip content="消息" effect="dark" placement="bottom">
+          <el-badge :value="$store.state.user.msgcount?$store.state.user.msgcount : ''" class="item international right-menu-item">
+            <router-link to="/message/list">
+              <el-button type="info" size="small" icon="el-icon-message"/>
+            </router-link>
+          </el-badge>
         </el-tooltip>
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+      <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom"/>
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
@@ -57,7 +48,7 @@ import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import ThemePicker from '@/components/ThemePicker'
-import Search from '@/components/HeaderSearch'
+import { fetchUnreadMsgCount } from '@/api/user'
 
 export default {
   components: {
@@ -67,8 +58,17 @@ export default {
     Screenfull,
     SizeSelect,
     LangSelect,
-    ThemePicker,
-    Search
+    ThemePicker
+  },
+  data() {
+    return {
+      count: this.$store.getters.user.msgcount,
+      listQuery: {
+        fid: this.$store.getters.user.fid,
+        receiveUserId: this.$store.getters.user.uid,
+        read: 0
+      }
+    }
   },
   computed: {
     ...mapGetters([
@@ -78,7 +78,17 @@ export default {
       'device'
     ])
   },
+  created() {
+    this.init()
+  },
   methods: {
+    init() {
+      if (!this.$store.getters.user.msgcount) {
+        fetchUnreadMsgCount(this.listQuery).then(response => {
+          this.$store.getters.user.msgcount = response.data.result
+        })
+      }
+    },
     toggleSideBar() {
       this.$store.dispatch('toggleSideBar')
     },
@@ -94,70 +104,52 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .navbar {
   height: 50px;
-  overflow: hidden;
-
+  line-height: 50px;
+  border-radius: 0px !important;
   .hamburger-container {
-    line-height: 46px;
-    height: 100%;
+    line-height: 58px;
+    height: 50px;
     float: left;
-    cursor: pointer;
-    transition: background .3s;
-
-    &:hover {
-      background: rgba(0, 0, 0, .025)
-    }
+    padding: 0 10px;
   }
-
-  .breadcrumb-container {
+  .breadcrumb-container{
     float: left;
   }
-
   .errLog-container {
     display: inline-block;
     vertical-align: top;
   }
-
   .right-menu {
     float: right;
     height: 100%;
-    line-height: 50px;
-
-    &:focus {
-      outline: none;
+    &:focus{
+     outline: none;
     }
-
     .right-menu-item {
       display: inline-block;
-      padding: 0 8px;
-      height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
-
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
-
-        &:hover {
-          background: rgba(0, 0, 0, .025)
-        }
-      }
+      margin: 0 8px;
     }
-
+    .screenfull {
+      height: 20px;
+    }
+    .international{
+      vertical-align: top;
+    }
+    .theme-switch {
+      vertical-align: 15px;
+    }
     .avatar-container {
+      height: 50px;
       margin-right: 30px;
-
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
-
         .user-avatar {
           cursor: pointer;
           width: 40px;
           height: 40px;
           border-radius: 10px;
         }
-
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
