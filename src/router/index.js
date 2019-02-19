@@ -81,7 +81,7 @@ export const constantRouterMap = [
 ]
 
 export default new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
@@ -326,6 +326,18 @@ export const asyncRouterMap = [
         component: () => import('@/views/myclass/index'),
         name: '执教班级',
         meta: { title: '执教班级', icon: 'tab' }
+      }
+    ]
+  },
+  {
+    path: '/score',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/score/index'),
+        name: '学生成绩',
+        meta: { title: '学生成绩', icon: 'tab' }
       }
     ]
   },

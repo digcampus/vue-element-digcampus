@@ -126,6 +126,11 @@
               <el-dropdown-item divided>
                 <span style="display:block;" @click="handleDelete(scope.row,'deleted')">{{ $t('delete') }}</span>
               </el-dropdown-item>
+              <el-dropdown-item divided>
+                <router-link :to="{path: '/score/index'}">
+                  <span style="display:block;">成绩</span>
+                </router-link>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
