@@ -1,26 +1,15 @@
 <template>
   <div class="login-container">
-
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form card-box" auto-complete="on" label-position="left">
-
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
       <div class="title-container">
-        <h3 class="title">登录</h3>
+        <h3 class="title">
+          {{ $t('login.title') }}
+        </h3>
+        <lang-select class="set-language" />
       </div>
 
-      <el-form-item v-if="false">
-        <span class="svg-container svg-container_login">
-          <svg-icon icon-class="school" />
-        </span>
-        <el-input
-          v-model="loginForm.fid"
-          placeholder="学校名称"
-          name="fid"
-          type="text"
-          auto-complete="on"
-        />
-      </el-form-item>
       <el-form-item prop="username">
-        <span class="svg-container svg-container_login">
+        <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
@@ -37,33 +26,52 @@
           <svg-icon icon-class="password" />
         </span>
         <el-input
-          :type="passwordType"
           v-model="loginForm.password"
+          :type="passwordType"
           :placeholder="$t('login.password')"
           name="password"
           auto-complete="on"
-          @keyup.enter.native="handleLogin" />
+          @keyup.enter.native="handleLogin"
+        />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon icon-class="eye" />
+          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">{{ $t('login.logIn') }}</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
+        {{ $t('login.logIn') }}
+      </el-button>
 
+      <div style="position:relative">
+        <div class="tips">
+          <span>{{ $t('login.username') }} : admin</span>
+          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
+        </div>
+        <div class="tips">
+          <span style="margin-right:18px;">
+            {{ $t('login.username') }} : editor
+          </span>
+          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
+        </div>
+
+        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
+          {{ $t('login.thirdparty') }}
+        </el-button>
+      </div>
     </el-form>
 
-    <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog" append-to-body>
+    <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog">
       {{ $t('login.thirdpartyTips') }}
       <br>
       <br>
       <br>
       <social-sign />
     </el-dialog>
-
   </div>
 </template>
 
 <script>
+import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './socialsignin'
 
@@ -72,24 +80,23 @@ export default {
   components: { LangSelect, SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (value.match(/^[ ]*$/)) {
-        callback(new Error('用户名错误'))
+      if (!validUsername(value)) {
+        callback(new Error('Please enter the correct user name'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6 || value.match(/^[ ]*$/)) {
-        callback(new Error('密码错误'))
+      if (value.length < 6) {
+        callback(new Error('The password can not be less than 6 digits'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: undefined,
-        password: undefined,
-        fid: undefined
+        username: 'admin',
+        password: '1111111'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -128,7 +135,6 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
-            sessionStorage.setItem('store', JSON.stringify(this.$store.state))
             this.loading = false
             this.$router.push({ path: this.redirect || '/' })
           }).catch(() => {
@@ -166,9 +172,9 @@ export default {
   /* 修复input 背景不协调 和光标变色 */
   /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-  $bg:#f4f3f3;
-  $light_gray:#8e928d;
-  $cursor: #050505;
+  $bg:#283443;
+  $light_gray:#eee;
+  $cursor: #fff;
 
   @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
     .login-container .el-input input{
@@ -193,7 +199,7 @@ export default {
         padding: 12px 5px 12px 15px;
         color: $light_gray;
         height: 47px;
-    //    caret-color: $cursor;
+        caret-color: $cursor;
         &:-webkit-autofill {
           -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
           -webkit-text-fill-color: $cursor !important;
@@ -204,7 +210,7 @@ export default {
       border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(0, 0, 0, 0.1);
       border-radius: 5px;
-   //   color: #454545;
+      color: #454545;
     }
   }
 </style>
@@ -217,7 +223,7 @@ $light_gray:#eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background: left top #f4f3f3;
+  background-color: $bg;
   overflow: hidden;
   .login-form {
     position: relative;
@@ -248,7 +254,7 @@ $light_gray:#eee;
     position: relative;
     .title {
       font-size: 26px;
-      color: #333333;
+      color: $light_gray;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
@@ -256,8 +262,10 @@ $light_gray:#eee;
     .set-language {
       color: #fff;
       position: absolute;
-      top: 5px;
+      top: 3px;
+      font-size:18px;
       right: 0px;
+      cursor: pointer;
     }
   }
   .show-pwd {
@@ -274,18 +282,5 @@ $light_gray:#eee;
     right: 0;
     bottom: 6px;
   }
-
-  .card-box {
-    padding:20px;
-    margin-top: 200px !important;
-    box-shadow:0 0px 8px 0 rgba(0,0,0,0.06),0 1px 0px 0 rgba(0,0,0,0.02);
-    -webkit-border-radius:5px;
-    border-radius:5px;
-    -moz-border-radius:5px;
-    background-clip:padding-box;
-    margin-bottom:20px;
-    background-color:#ffffff;
-    }
-
 }
 </style>
