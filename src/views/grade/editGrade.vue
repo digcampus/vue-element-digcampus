@@ -78,7 +78,7 @@
 <script>
 import { fetchList, fetchPv } from '@/api/article'
 import { fetchTeacherList, updateGrade, fetchCourseList } from '@/api/user'
-import { isvalidStr } from '@/utils/validate'
+// import { isvalidStr } from '@/utils/validate'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
@@ -159,7 +159,7 @@ export default {
       rules: {
         name: [{ required: true, message: '名称必填', trigger: 'blur' }],
         teacherName1: [{ required: true, message: '班主任必填', trigger: 'change' }],
-        teacherName: [{ validate: isvalidStr, trigger: 'change' }],
+        //   teacherName: [{ validate: isvalidStr, trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false

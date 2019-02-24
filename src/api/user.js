@@ -254,3 +254,20 @@ export function fetchSemester(query) {
     params: query
   })
 }
+
+// 获取指定年级的考试
+export function fetchExamListByClassId(classId) {
+  return request({
+    url: '/course/examList/' + classId,
+    method: 'get'
+  })
+}
+
+// 获取指定班级，指定考试的成绩
+export function fetchScoreListByClassAndSemester(semesterId, classId, sort) {
+  return request({
+    url: '/course/scoreList/' + semesterId + '/' + classId,
+    method: 'get',
+    params: { 'sort': sort }
+  })
+}

@@ -1,55 +1,52 @@
 <template>
   <div class="app-container">
+    <div class="filter-container" style="margin-top:-10px;">
+      <el-select v-model="listQuery.examId" placeholder="考试名称" clearable class="filter-item" style="width: 250px">
+        <el-option v-for="item in examList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+    </div>
     <el-table
       v-loading="listLoading"
       :key="tableKey"
-      :data="list"
+      :data="scoreList[1]"
+      :default-sort ="{prop:'rank',order:'ascending'}"
       border
-      fit
       highlight-current-row
-      style="width: 100%;min-height:300px;">
-      <el-table-column :label="$t('table.id')" align="center" width="65">
+      style="width: 100%;min-height:300px;"
+      @sort-change="sortChange">
+      <el-table-column :label="$t('table.id')" align="center" width="50">
         <template slot-scope="scope">
           <span>{{ scope.$index+1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考试名称" width="150px" align="center">
+      <el-table-column label="学生姓名" width="100px" align="center">
         <template slot-scope="scope">
           <el-tooltip placement="left" effect="light">
-            <div slot="content">{{ scope.row.showName }}</div>
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.realname }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="考试时间" min-width="150px">
+      <el-table-column v-for="(message, index) in scoreList[0]" :prop="message" :key="index" :label="message" align="center" width="100">
+        <el-table-column :prop="message" :formatter="formatScore" label="分数" align="center" width="50"/>
+        <el-table-column :prop="'rank_' + message" :formatter="formatScoreRank" label="班级排名" align="center" width="105" sortable/>
+        <el-table-column :prop="'rank_' + message" :formatter="formatScoreRank" label="年级排名" align="center" width="105" sortable/>
+      </el-table-column>
+      <el-table-column :formatter="formatAge" prop="avg" label="平均分" align="center" width="70">
         <template slot-scope="scope">
-          <span v-for="item in scope.row.clazzList" :key="item.id" class="el-tag el-tag--info el-tag--small" style="margin-left:5px;">
-            <span class="link-type" @click="handleEditClass(item)">{{ item.name }}(班主任:{{ item.teacher.name }})</span>
-          </span>
+          <span>{{ scope.row.avg }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="执教科目" min-width="200px" align="center">
+      <el-table-column label="总分" prop="total" align="center" width="60">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.graduationStatus==1" type="info"> 已毕业</el-tag>
-          <el-tag v-else>在读</el-tag>
+          <span>{{ scope.row.total }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平均分" align="center" width="65">
+      <el-table-column label="班级排名" align="center" prop="rank" width="105" sortable>
         <template slot-scope="scope">
-          <span>80</span>
+          <span>{{ scope.row.rank }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总分" align="center" width="65">
-        <template slot-scope="scope">
-          <span>350</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="班级排名" align="center" width="80">
-        <template slot-scope="scope">
-          <span>10</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="年级排名" align="center" width="80">
+      <el-table-column label="年级排名" align="center" width="105" sortable>
         <template slot-scope="scope">
           <span>20</span>
         </template>
@@ -63,37 +60,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" />
-        </el-form-item>
-        <el-form-item :label="$t('table.title')" prop="title">
-          <el-input v-model="temp.title"/>
-        </el-form-item>
-        <el-form-item :label="$t('table.status')">
-          <el-select v-model="temp.status" class="filter-item" >
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;"/>
-        </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input :autosize="{ minRows: 2, maxRows: 4}" v-model="temp.remark" type="textarea"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('table.confirm') }}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{ $t('table.confirm') }}</el-button>
-      </div>
-    </el-dialog>
 
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
@@ -112,11 +78,10 @@
 
 <script>
 import { createArticle, updateArticle } from '@/api/article'
-import { fetchGradeList, deleteGrade } from '@/api/user'
+import { fetchGradeList, deleteGrade, fetchExamListByClassId, fetchScoreListByClassAndSemester } from '@/api/user'
 import waves from '@/directive/waves' // 水波纹指令
 import editClass from '@/views/grade/editClass'
 import editGrade from '@/views/grade/editGrade'
-import { parseTime } from '@/utils'
 
 export default {
   name: 'ComplexTable',
@@ -148,7 +113,8 @@ export default {
         importance: undefined,
         title: undefined,
         type: undefined,
-        sort: '+id'
+        sort: '+id',
+        examId: undefined
       },
       importanceOptions: [1, 2, 3],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -177,13 +143,91 @@ export default {
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       classId: undefined,
-      downloadLoading: false
+      downloadLoading: false,
+      examList: [],
+      scoreList: []
     }
   },
   created() {
-    this.getList()
+    //   this.getList()
+    this.fetchExamListByClassId()
+    this.fetchScoreListByClassAndSemester()
   },
   methods: {
+    sortChange(column, prop, order) {
+      var sort = null
+      if (column.prop) {
+        var type = '+'
+        if (column.order === 'descending') {
+          type = '-'
+        }
+        sort = type + column.prop + ' is null, ' + type + column.prop
+        this.fetchScoreListByClassAndSemester(sort)
+      }
+
+      // 点击排序按钮后拿到column.order，可以发送column.order给后台，后台再根据什么排序来返回排序过后的数据
+
+      console.log(column + '---' + column.prop + '---' + column.order)
+
+      // 输出的结果 [object Object]---name---ascending
+    },
+    formatScore(row, column, cellValue, index) {
+      return row[column.property]
+      // if (score) {
+      //   return score
+      // } else {
+      //   return '缺考'
+      // }
+    },
+    formatScoreRank(row, column, cellValue, index) {
+      // debugger
+      // if (column.label.endsWith('排名')) {
+      //   var i = column.label.indexOf('排名')
+      //   var label = 'rank_' + column.label.substr(0, i)
+      //   return row[label]
+      // }
+      return row[column.property]
+      // if (score) {
+      //   return score
+      // } else {
+      //   return '缺考'
+      // }
+    },
+    formatSum(row, column, cellValue, index) {
+      var sum = 0
+      for (var key in this.scoreList[0]) {
+        var score = row[this.scoreList[0][key]]
+        if (score) {
+          sum += score
+        }
+      }
+      if (sum) {
+        return sum
+      }
+      return '缺考'
+    },
+    formatAge(row, column, cellValue, index) {
+      var sum = 0
+      for (var key in this.scoreList[0]) {
+        var score = row[this.scoreList[0][key]]
+        if (score) {
+          sum += score
+        }
+      }
+      return (sum / this.scoreList[0].length).toFixed(2)
+    },
+    fetchExamListByClassId() {
+      fetchExamListByClassId(1).then(response => {
+        this.examList = response.data.result
+      })
+    },
+    fetchScoreListByClassAndSemester(sort) {
+      this.listLoading = true
+      fetchScoreListByClassAndSemester(1, 1, sort).then(response => {
+        this.scoreList = response.data.result
+        this.listLoading = false
+      })
+    },
     updateGradeRow: function(rowData, index) {
       if (index > -1) {
         this.list.splice(index, 1, rowData)
@@ -304,16 +348,6 @@ export default {
       })
       const index = this.list.indexOf(row)
       this.list.splice(index, 1)
-    },
-
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
     }
   }
 }
