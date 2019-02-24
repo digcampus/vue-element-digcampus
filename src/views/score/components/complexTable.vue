@@ -9,49 +9,58 @@
       v-loading="listLoading"
       :key="tableKey"
       :data="scoreList[1]"
-      :default-sort ="{prop:'rank',order:'ascending'}"
+      :default-sort ="{prop:'rank_total',order:'ascending'}"
+      :header-cell-style="getRowClass"
       border
       highlight-current-row
       style="width: 100%;min-height:300px;"
       @sort-change="sortChange">
-      <el-table-column :label="$t('table.id')" align="center" width="50">
+      <el-table-column :label="$t('table.id')" align="center" min-width="50">
         <template slot-scope="scope">
           <span>{{ scope.$index+1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="学生姓名" width="100px" align="center">
+      <el-table-column label="学生姓名" min-width="90px" align="center">
         <template slot-scope="scope">
           <el-tooltip placement="left" effect="light">
             <span>{{ scope.row.realname }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column v-for="(message, index) in scoreList[0]" :prop="message" :key="index" :label="message" align="center" width="100">
-        <el-table-column :prop="message" :formatter="formatScore" label="分数" align="center" width="50"/>
-        <el-table-column :prop="'rank_' + message" :formatter="formatScoreRank" label="班级排名" align="center" width="105" sortable/>
-        <el-table-column :prop="'rank_' + message" :formatter="formatScoreRank" label="年级排名" align="center" width="105" sortable/>
-      </el-table-column>
-      <el-table-column :formatter="formatAge" prop="avg" label="平均分" align="center" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.avg }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总分" prop="total" align="center" width="60">
+      <el-table-column label="总分" prop="total" align="center" min-width="50">
         <template slot-scope="scope">
           <span>{{ scope.row.total }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="班级排名" align="center" prop="rank" width="105" sortable>
+      <el-table-column :formatter="formatAge" prop="avg" label="平均分" align="center" min-width="65">
         <template slot-scope="scope">
-          <span>{{ scope.row.rank }}</span>
+          <span>{{ scope.row.total? scope.row.avg: null }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="年级排名" align="center" width="105" sortable>
+      <!-- <el-table-column :formatter="formatAge" prop="avg" label="等级" align="center" min-width="65">
         <template slot-scope="scope">
-          <span>20</span>
+          <span v-if="scope.row.avg>=90">A</span>
+          <span v-else-if="scope.row.avg<90 && scope.row.avg>=80">B</span>
+          <span v-else-if="scope.row.avg<80 && scope.row.avg>=60">C</span>
+          <span v-else>D</span>
+        </template>
+      </el-table-column> -->
+      <el-table-column label="班级排名" align="center" prop="rank_total" min-width="105" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.rank_total }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="年级排名" align="center" prop="sum_rank_total" min-width="105" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.sum_rank_total }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-for="(message, index) in scoreList[0]" :prop="message" :key="index" :label="message" align="center" width="100">
+        <el-table-column :prop="message" :formatter="formatScore" label="分数" align="center" min-width="50"/>
+        <el-table-column :prop="'rank_' + message" :formatter="formatScoreRank" label="班级排名" align="center" min-width="105" sortable/>
+        <el-table-column :prop="'sum_rank_' + message" :formatter="formatScoreRank" label="年级排名" align="center" min-width="105" sortable/>
+      </el-table-column>
+      <el-table-column :label="$t('table.actions')" align="center" min-width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button v-if="$store.state.user.admin" type="primary" size="mini" @click="handleUpdate(scope.row, scope.$index, false)">{{ $t('table.edit') }}</el-button>
           <el-button size="mini" type="success" @click="handleUpdate(scope.row, scope.$index, true)">查看</el-button>
@@ -154,6 +163,17 @@ export default {
     this.fetchScoreListByClassAndSemester()
   },
   methods: {
+    getRowClass({ row, column, rowIndex, columnIndex }) {
+      if (rowIndex === 0 && column.colSpan === 3) {
+        if (columnIndex % 2 === 0) {
+          return 'background:rgb(240, 249, 235);text-align:center;font-size:15px;font-weight:bold;'
+        } else {
+          return 'text-align:center;font-size:15px;font-weight:bold;'
+        }
+      } else {
+        return ''
+      }
+    },
     sortChange(column, prop, order) {
       var sort = null
       if (column.prop) {
@@ -223,7 +243,7 @@ export default {
     },
     fetchScoreListByClassAndSemester(sort) {
       this.listLoading = true
-      fetchScoreListByClassAndSemester(1, 1, sort).then(response => {
+      fetchScoreListByClassAndSemester(1, 1, 1, sort).then(response => {
         this.scoreList = response.data.result
         this.listLoading = false
       })

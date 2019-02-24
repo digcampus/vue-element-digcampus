@@ -256,17 +256,17 @@ export function fetchSemester(query) {
 }
 
 // 获取指定年级的考试
-export function fetchExamListByClassId(classId) {
+export function fetchExamListByClassId(gradeId) {
   return request({
-    url: '/course/examList/' + classId,
+    url: '/course/examList/' + gradeId,
     method: 'get'
   })
 }
 
 // 获取指定班级，指定考试的成绩
-export function fetchScoreListByClassAndSemester(semesterId, classId, sort) {
+export function fetchScoreListByClassAndSemester(semesterId, gradeId, classId, sort) {
   return request({
-    url: '/course/scoreList/' + semesterId + '/' + classId,
+    url: '/course/scoreList/' + semesterId + '/' + gradeId + '/' + classId,
     method: 'get',
     params: { 'sort': sort }
   })
