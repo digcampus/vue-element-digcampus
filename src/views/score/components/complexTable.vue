@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container" style="margin-top:-10px;">
-      <el-select v-model="listQuery.examId" placeholder="考试名称" clearable class="filter-item" style="width: 250px">
+      <el-select v-model="listQuery.examId" placeholder="考试名称" value-key="id" clearable class="filter-item" style="width: 250px">
         <el-option v-for="item in examList" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
     </div>
@@ -239,6 +239,9 @@ export default {
     fetchExamListByClassId() {
       fetchExamListByClassId(1).then(response => {
         this.examList = response.data.result
+        if (this.examList.length) {
+          this.listQuery.examId = this.examList[0].id
+        }
       })
     },
     fetchScoreListByClassAndSemester(sort) {
