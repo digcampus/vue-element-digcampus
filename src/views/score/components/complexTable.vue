@@ -1,9 +1,16 @@
 <template>
   <div class="app-container">
     <div class="filter-container" style="margin-top:-10px;">
-      <el-select v-model="listQuery.examId" placeholder="考试名称" value-key="id" clearable class="filter-item" style="width: 250px">
+      <el-select v-model="listQuery.examId" placeholder="考试名称" value-key="id" clearable class="filter-item" style="width: 250px" @change="fetchSemesterGradeList">
         <el-option v-for="item in examList" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
+      <el-select v-model="listQuery.gradeId" placeholder="年级" value-key="id" clearable class="filter-item" style="width: 250px" @change="getClass">
+        <el-option v-for="item in semesterGradeList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+      <el-select v-model="listQuery.classId" placeholder="班级" value-key="id" clearable class="filter-item" style="width: 250px" >
+        <el-option v-for="item in classList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+      <el-button v-waves :disabled="!listQuery.gradeId" class="filter-item" type="primary" icon="el-icon-search" @click="fetchScoreListByClassAndSemester">{{ $t('table.search') }}</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -13,8 +20,7 @@
       :header-cell-style="getRowClass"
       border
       highlight-current-row
-      style="width: 100%;min-height:300px;"
-      @sort-change="sortChange">
+      style="width: 100%;min-height:300px;">
       <el-table-column :label="$t('table.id')" align="center" min-width="50">
         <template slot-scope="scope">
           <span>{{ scope.$index+1 }}</span>
@@ -24,6 +30,13 @@
         <template slot-scope="scope">
           <el-tooltip placement="left" effect="light">
             <span>{{ scope.row.realname }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="showClass" label="班级" min-width="130px" align="center">
+        <template slot-scope="scope">
+          <el-tooltip placement="left" effect="light">
+            <span>{{ scope.row.class_name }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -81,13 +94,12 @@
     </el-dialog>
 
     <edit-grade ref="editGrade" @listenToChildEvent="updateGradeRow"/>
-    <edit-class ref="showClass"/>
   </div>
 </template>
 
 <script>
 import { createArticle, updateArticle } from '@/api/article'
-import { fetchGradeList, deleteGrade, fetchExamListByClassId, fetchScoreListByClassAndSemester } from '@/api/user'
+import { fetchSemesterGradeList, fetchGradeList, deleteGrade, fetchExamListByClassId, fetchScoreListByClassAndSemester } from '@/api/user'
 import waves from '@/directive/waves' // 水波纹指令
 import editClass from '@/views/grade/editClass'
 import editGrade from '@/views/grade/editGrade'
@@ -113,7 +125,7 @@ export default {
       tableKey: 0,
       list: null,
       total: null,
-      listLoading: true,
+      listLoading: false,
       listQuery: {
         page: 1,
         limit: 20,
@@ -123,6 +135,8 @@ export default {
         title: undefined,
         type: undefined,
         sort: '+id',
+        gradeId: undefined,
+        classId: undefined,
         examId: undefined
       },
       importanceOptions: [1, 2, 3],
@@ -154,15 +168,39 @@ export default {
       classId: undefined,
       downloadLoading: false,
       examList: [],
-      scoreList: []
+      scoreList: [],
+      semesterGradeList: [],
+      classList: [],
+      showClass: undefined
     }
   },
   created() {
-    //   this.getList()
     this.fetchExamListByClassId()
-    this.fetchScoreListByClassAndSemester()
+    this.fetchGradeList()
   },
   methods: {
+    fetchSemesterGradeList() {
+      if (this.listQuery.examId) {
+        fetchSemesterGradeList(this.listQuery.examId).then(response => {
+          this.semesterGradeList = response.data.result
+        })
+      }
+    },
+    fetchGradeList() {
+      fetchGradeList(this.listQuery).then(response => {
+        this.gradeList = response.data.result.list
+      })
+    },
+    getClass() {
+      if (this.listQuery.gradeId) {
+        for (const index in this.gradeList) {
+          const grade = this.gradeList[index]
+          if (grade.id === this.listQuery.gradeId) {
+            this.classList = grade.clazzList
+          }
+        }
+      }
+    },
     getRowClass({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0 && column.colSpan === 3) {
         if (columnIndex % 2 === 0) {
@@ -174,44 +212,11 @@ export default {
         return ''
       }
     },
-    sortChange(column, prop, order) {
-      var sort = null
-      if (column.prop) {
-        var type = '+'
-        if (column.order === 'descending') {
-          type = '-'
-        }
-        sort = type + column.prop + ' is null, ' + type + column.prop
-        this.fetchScoreListByClassAndSemester(sort)
-      }
-
-      // 点击排序按钮后拿到column.order，可以发送column.order给后台，后台再根据什么排序来返回排序过后的数据
-
-      console.log(column + '---' + column.prop + '---' + column.order)
-
-      // 输出的结果 [object Object]---name---ascending
-    },
     formatScore(row, column, cellValue, index) {
       return row[column.property]
-      // if (score) {
-      //   return score
-      // } else {
-      //   return '缺考'
-      // }
     },
     formatScoreRank(row, column, cellValue, index) {
-      // debugger
-      // if (column.label.endsWith('排名')) {
-      //   var i = column.label.indexOf('排名')
-      //   var label = 'rank_' + column.label.substr(0, i)
-      //   return row[label]
-      // }
       return row[column.property]
-      // if (score) {
-      //   return score
-      // } else {
-      //   return '缺考'
-      // }
     },
     formatSum(row, column, cellValue, index) {
       var sum = 0
@@ -239,14 +244,12 @@ export default {
     fetchExamListByClassId() {
       fetchExamListByClassId(1).then(response => {
         this.examList = response.data.result
-        if (this.examList.length) {
-          this.listQuery.examId = this.examList[0].id
-        }
       })
     },
-    fetchScoreListByClassAndSemester(sort) {
+    fetchScoreListByClassAndSemester() {
+      this.showClass = !this.listQuery.classId
       this.listLoading = true
-      fetchScoreListByClassAndSemester(1, 1, 1, sort).then(response => {
+      fetchScoreListByClassAndSemester(this.listQuery.examId, this.listQuery.gradeId, this.listQuery.classId).then(response => {
         this.scoreList = response.data.result
         this.listLoading = false
       })
@@ -332,11 +335,6 @@ export default {
     },
     handleUpdate(row, index, disabled) {
       this.$refs.editGrade.handleModifyStatus(row, index, disabled)
-    },
-    handleEditClass(item) {
-      if (this.$refs.showClass) {
-        this.$refs.showClass.handleModifyStatus(item)
-      }
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
