@@ -80,71 +80,57 @@ export default {
     },
     setOptions({ expectedData, actualData } = {}) {
       this.chart.setOption({
-        xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          boundaryGap: false,
-          axisTick: {
-            show: false
-          }
-        },
-        grid: {
-          left: 10,
-          right: 10,
-          bottom: 20,
-          top: 30,
-          containLabel: true
+        title: {
+          text: '张三历史成绩',
+          x: 'left'
         },
         tooltip: {
           trigger: 'axis',
-          axisPointer: {
-            type: 'cross'
-          },
-          padding: [5, 10]
-        },
-        yAxis: {
-          axisTick: {
-            show: false
+          axisPointer: { // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
           }
         },
         legend: {
-          data: ['expected', 'actual']
+          data: ['语文成绩', '数学成绩'],
+          selected: { '数学成绩': false } // 初始化时，不显示该曲线
         },
-        series: [{
-          name: 'expected', itemStyle: {
-            normal: {
-              color: '#FF005A',
-              lineStyle: {
-                color: '#FF005A',
-                width: 2
-              }
-            }
-          },
-          smooth: true,
-          type: 'line',
-          data: expectedData,
-          animationDuration: 2800,
-          animationEasing: 'cubicInOut'
+        toolbox: {
+          show: true,
+          feature: {
+            mark: { show: true },
+            dataView: { show: true, readOnly: true },
+            magicType: { show: true, type: ['line', 'bar'] },
+            restore: { show: true },
+            saveAsImage: { show: true }
+          }
         },
-        {
-          name: 'actual',
-          smooth: true,
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: '#3888fa',
-              lineStyle: {
-                color: '#3888fa',
-                width: 2
-              },
-              areaStyle: {
-                color: '#f3f8ff'
-              }
-            }
+        calculable: true,
+        xAxis: [
+          {
+            type: 'category',
+            boundaryGap: false,
+            data: ['一年级期末考试', '二年级期末考试', '三年级期末考试', '四年级期末考试', '五年级期末考试', '六年级期末考试']
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value'
+          }
+        ],
+        series: [
+          {
+            name: '语文成绩',
+            type: 'line',
+            tiled: '总量',
+            data: [null, 80, 89, 76, 92, 84]
           },
-          data: actualData,
-          animationDuration: 2800,
-          animationEasing: 'quadraticOut'
-        }]
+          {
+            name: '数学成绩',
+            type: 'line',
+            tiled: '总量',
+            data: [80, 90, 89, null, 88, 92]
+          }
+        ]
       })
     },
     initChart() {
