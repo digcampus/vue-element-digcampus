@@ -278,3 +278,10 @@ export function fetchSemesterGradeList(semesterId) {
     method: 'get'
   })
 }
+
+export function fetchStuScoreList(stuId) {
+  return request({
+    url: '/course/examScoreList/' + stuId,
+    method: 'get'
+  })
+}

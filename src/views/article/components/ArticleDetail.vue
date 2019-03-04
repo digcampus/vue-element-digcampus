@@ -22,7 +22,7 @@
       <div class="createPost-main-container">
         <el-form-item prop="content" style="margin-top:-10px;">
           <div style="margin-left:15px;margin-right:25px;line-height:0px;">
-            <vue-ueditor-wrap ref="ueditor" v-model="article.content" @ready="ready"/>
+            <vue-ueditor-wrap ref="ueditor" :config="defaultConfig" v-model="article.content" @ready="ready"/>
           </div>
         </el-form-item>
       </div>
@@ -100,6 +100,10 @@ export default {
   },
   data() {
     return {
+      defaultConfig: {
+        UEDITOR_HOME_URL: '../../static/ueditor/',
+        enableAutoSave: false
+      },
       selectTeacher: false,
       selectStudent: false,
       loading: false,
