@@ -49,9 +49,9 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column width="160px" align="center" label="更新时间">
+        <el-table-column width="160px" align="center" label="创建时间">
           <template slot-scope="scope">
-            <span>{{ scope.row.modifyTime }}</span>
+            <span>{{ scope.row.createTime }}</span>
           </template>
         </el-table-column>
         <el-table-column width="160px" align="center" label="发布时间">
