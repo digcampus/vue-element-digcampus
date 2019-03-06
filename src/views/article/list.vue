@@ -68,24 +68,6 @@
             </router-link>
             <el-button size="mini" type="success" @click="updateSend(scope.row)">发布</el-button>
             <el-button size="mini" type="danger" @click="deleteArticle(scope.row)">删除</el-button>
-            <!--<el-button style="margin:5px;float:right">
-              <el-dropdown class="avatar-container right-menu-item" trigger="click">
-                <i style="cursor:pointer" class="el-icon-caret-bottom"/>
-                <el-dropdown-menu slot="dropdown">
-                  <router-link :to="'/notice/edit/'+scope.row.articleId">
-                    <el-dropdown-item>
-                      {{ $t('edit') }}
-                    </el-dropdown-item>
-                  </router-link>
-                  <el-dropdown-item divided>
-                    <span style="display:block;" @click="showUploadData(scope.row)">查 看</span>
-                  </el-dropdown-item>
-                  <el-dropdown-item divided>
-                    <span style="display:block;" @click="deleteArticle(scope.row)">{{ $t('delete') }}</span>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </el-button> -->
           </template>
         </el-table-column>
       </el-table>

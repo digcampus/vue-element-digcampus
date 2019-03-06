@@ -285,3 +285,19 @@ export function fetchStuScoreList(stuId) {
     method: 'get'
   })
 }
+
+// 获取指定机构的模板
+export function fetchModuleList(query) {
+  return request({
+    url: '/module/list/' + query.fid,
+    method: 'get'
+  })
+}
+
+export function createModule(data) {
+  return request({
+    url: '/module/addModule',
+    method: 'post',
+    data
+  })
+}
