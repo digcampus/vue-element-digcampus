@@ -61,3 +61,19 @@ export function publishArticle(data) {
     data
   })
 }
+
+export function publishWechatMsg(data) {
+  return request({
+    url: '/wechat/message/send',
+    method: 'post',
+    data
+  })
+}
+
+export function getTemplateWidget(id, content) {
+  return request({
+    url: '/wechat/template/' + id,
+    method: 'get',
+    params: { 'content': content }
+  })
+}

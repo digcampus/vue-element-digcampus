@@ -1,9 +1,10 @@
 <template>
   <div class="app-container">
+    <el-button v-if="$store.state.user.admin && type" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handlePublish">发布消息</el-button>
+
     <div class="filter-container" style="margin-top:-10px;">
       <el-button v-if="$store.state.user.admin && type" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     </div>
-
     <el-table
       v-loading="listLoading"
       :key="tableKey"
@@ -72,7 +73,13 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" append-to-body style="width: 800px;margin: 0 auto 50px;">
+    <fm-generate-form
+      ref="generateForm"
+      :data="jsonData"
+      :value="values"/>
+    <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="getData">{{ $t('table.add') }}</el-button>
+
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible1" append-to-body style="width: 800px;margin: 0 auto 50px;">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 90%; margin-left:10px;">
         <el-form-item label="模块名称" prop="moduleName">
           <el-input v-model="temp.moduleName" :maxlength="20"/>
@@ -143,7 +150,6 @@
         <el-button v-else type="primary" @click="updateData">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -158,10 +164,18 @@ const calendarTypeOptions = [
   { key: 1, display_name: '可用' }
 ]
 
+var Child = {
+  template: '<div>A custom component!</div>'
+}
+
 export default {
   name: 'ComplexTable',
   directives: {
     waves
+  },
+  components: {
+    // <my-component> 将只在父组件模板中可用
+    'my-component': Child
   },
   filters: {
     statusFilter(status) {
@@ -189,6 +203,56 @@ export default {
   },
   data() {
     return {
+      jsonData: {
+        'list': [
+          {
+            'type': 'input',
+            'name': '单行文本',
+            'icon': 'icon-input',
+            'options': {
+              'width': '100%',
+              'defaultValue': '',
+              'required': false,
+              'dataType': 'string',
+              'pattern': '',
+              'placeholder': '',
+              'remoteFunc': 'func_1540908864000_94322'
+            },
+            'key': '1540908864000_94322',
+            'model': 'input_1540908864000_94322',
+            'rules': [
+              {
+                'type': 'string',
+                'message': '单行文本格式不正确'
+              }
+            ]
+          }
+        ],
+        'config': {
+          'labelWidth': 100,
+          'labelPosition': 'left',
+          'size': 'small'
+        }
+      }, // 表单配置中生成的json数据
+      values: {}, // 表单需要显示的表单数据
+      remoteFuncs: {
+        // 组件配置时配置的远端方法,保持和配置时输入的名称一致
+        func_test(resolve) {
+          // 模拟接口请求
+          setTimeout(() => {
+            const options = [
+              { id: '1', name: '1111' },
+              { id: '2', name: '2222' },
+              { id: '3', name: '3333' }
+            ]
+
+            // 获取到的值和标签可以通过配置页远端配置
+            // 值:id  标签：name
+
+            resolve(options) // 将后端获取的数据放入回调函数中
+          }, 2000)
+        }
+      },
       disabled: true,
       tableKey: 0,
       list: null,
@@ -262,6 +326,15 @@ export default {
     this.fetchGradeList()
   },
   methods: {
+    getData() {
+      // 调用此方法验证表单数据和获取表单数据
+      this.$refs.generateForm.getData().then(data => {
+        // 数据校验成功
+        // data 为获取的表单数据
+      }).catch(e => {
+        // 数据校验失败
+      })
+    },
     getSelectUser() {
       return this.userList
     },
@@ -316,6 +389,9 @@ export default {
       })
     },
     getList() {
+      debugger
+      var d = this.moduleTemplate
+      console.log(d)
       this.listLoading = true
       fetchModuleList(this.listQuery).then(response => {
         this.list = response.data.result

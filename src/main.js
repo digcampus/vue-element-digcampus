@@ -23,8 +23,12 @@ import './assets/iconfont/iconfont.js'
 import './errorLog' // error log
 import './permission' // permission control
 import './mock' // simulation data
+import FormMaking from 'form-making'
+import 'form-making/dist/FormMaking.css'
 
 import * as filters from './filters' // global filters
+
+Vue.use(FormMaking)
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size

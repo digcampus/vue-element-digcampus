@@ -301,3 +301,10 @@ export function createModule(data) {
     data
   })
 }
+
+export function fetchWechatTemplateList(fid) {
+  return request({
+    url: '/system/wechatTemplateList/' + fid,
+    method: 'get'
+  })
+}
