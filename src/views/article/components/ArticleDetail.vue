@@ -503,15 +503,17 @@ export default {
   .my-operation .my-cancel-btn, .confirm-btn {
     flex: 1;
   }
-  .my-operation .confirm-btn {
-    color: #ffb000;
-  }
+
   .my-operation .my-btn-text {
     text-align: center;
     font-size: 16px;
     margin: 14px 0;
     padding: 6px 0;
   }
+
+  .my-btn-text:hover{
+    color:#ffb000;
+    }
 
   /* 其他修饰样式 */
   .my-border-right {
