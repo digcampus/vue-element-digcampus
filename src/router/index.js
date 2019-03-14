@@ -6,12 +6,7 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/views/layout/Layout'
 
-/* Router Modules */
-import componentsRouter from './modules/components'
-import chartsRouter from './modules/charts'
 import tableRouter from './modules/table'
-import treeTableRouter from './modules/tree-table'
-import nestedRouter from './modules/nested'
 
 /** note: sub-menu only appear when children.length>=1
  *  detail see  https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -30,7 +25,7 @@ import nestedRouter from './modules/nested'
     icon: 'svg-name'             the icon show in the sidebar
     noCache: true                if true, the page will no be cached(default is false)
     breadcrumb: false            if false, the item will hidden in breadcrumb(default is true)
-    affix: true                  if true, the tag will affix in the tags-view
+    affix: true                  if true, the tag will affix in the tags-view  //无关闭图标
   }
 **/
 export const constantRouterMap = [
@@ -61,6 +56,12 @@ export const constantRouterMap = [
     hidden: true
   },
   {
+    path: '/notice/:id(\\d+)',
+    component: () => import('@/views/notice/show'),
+    hidden: true,
+    meta: { title: 'notice', icon: 'notice', noCache: true }
+  },
+  {
     path: '/401',
     component: () => import('@/views/errorPage/401'),
     hidden: true
@@ -77,295 +78,269 @@ export const constantRouterMap = [
         meta: { title: 'dashboard', icon: 'dashboard', noCache: true, affix: true }
       }
     ]
-  },
-  {
-    path: '/documentation',
-    component: Layout,
-    redirect: '/documentation/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
-        meta: { title: 'documentation', icon: 'documentation', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/guide/index'),
-        name: 'Guide',
-        meta: { title: 'guide', icon: 'guide', noCache: true }
-      }
-    ]
   }
 ]
 
 export default new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
 
 export const asyncRouterMap = [
   {
-    path: '/permission',
+    path: '/article',
     component: Layout,
-    redirect: '/permission/index',
-    alwaysShow: true, // will always show the root menu
+    redirect: '/article/list',
+    name: 'Notice',
     meta: {
-      title: 'permission',
-      icon: 'lock',
-      roles: ['admin', 'editor'] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'page',
-        component: () => import('@/views/permission/page'),
-        name: 'PagePermission',
-        meta: {
-          title: 'pagePermission',
-          roles: ['admin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: 'directive',
-        component: () => import('@/views/permission/directive'),
-        name: 'DirectivePermission',
-        meta: {
-          title: 'directivePermission'
-          // if do not set roles, means: this page does not require permission
-        }
-      }
-    ]
-  },
-
-  {
-    path: '/icon',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/svg-icons/index'),
-        name: 'Icons',
-        meta: { title: 'icons', icon: 'icon', noCache: true }
-      }
-    ]
-  },
-
-  /** When your routing table is too long, you can split it into small modules**/
-  componentsRouter,
-  chartsRouter,
-  nestedRouter,
-  tableRouter,
-  treeTableRouter,
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/list',
-    name: 'Example',
-    meta: {
-      title: 'example',
+      title: 'notice',
       icon: 'example'
     },
     children: [
       {
         path: 'create',
-        component: () => import('@/views/example/create'),
-        name: 'CreateArticle',
-        meta: { title: 'createArticle', icon: 'edit' }
+        component: () => import('@/views/article/create'),
+        name: 'CreateNotice',
+        meta: { title: 'createNotice', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
-        component: () => import('@/views/example/edit'),
-        name: 'EditArticle',
-        meta: { title: 'editArticle', noCache: true },
+        component: () => import('@/views/article/edit'),
+        name: 'EditNotice',
+        meta: { title: '公告编辑', noCache: true },
         hidden: true
       },
       {
         path: 'list',
-        component: () => import('@/views/example/list'),
-        name: 'ArticleList',
-        meta: { title: 'articleList', icon: 'list' }
+        component: () => import('@/views/article/list'),
+        name: 'NoticeList',
+        meta: { title: 'noticeList', icon: 'list' }
       }
     ]
   },
-
   {
-    path: '/tab',
+    path: '/laoshiguanli',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/tab/index'),
-        name: 'Tab',
-        meta: { title: 'tab', icon: 'tab' }
+        component: () => import('@/views/teacher/complexTable'),
+        name: 'laoshiguanli',
+        meta: { title: 'laoshiguanli', icon: 'laoshiguanli' }
       }
     ]
   },
-
   {
-    path: '/error',
+    path: '/xueshengguanli',
     component: Layout,
-    redirect: 'noredirect',
-    name: 'ErrorPages',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/student/complexTable'),
+        name: 'xueshengguanli',
+        meta: { title: 'xueshengguanli', icon: 'xueshengguanli', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/nianjiguanli',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/grade/complexTable'),
+        name: 'nianjiguanli',
+        meta: { title: 'nianjiguanli', icon: 'nianjiguanli' }
+      }
+    ]
+  },
+  {
+    path: '/group',
+    component: Layout,
+    redirect: '/group/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/group/index'),
+        name: 'group',
+        meta: { title: 'group', icon: 'group' }
+      }
+    ]
+  },
+  {
+    path: '/leave',
+    component: Layout,
+    redirect: '/leave/list',
+    name: 'Leave',
     meta: {
-      title: 'errorPages',
-      icon: '404'
+      title: '请假',
+      icon: 'qingjia'
     },
     children: [
       {
-        path: '401',
-        component: () => import('@/views/errorPage/401'),
-        name: 'Page401',
-        meta: { title: 'page401', noCache: true }
+        path: 'create',
+        component: () => import('@/views/components-demo/uEditor'),
+        name: 'CreateLeave',
+        meta: { title: '创建请假', icon: 'edit' }
       },
       {
-        path: '404',
-        component: () => import('@/views/errorPage/404'),
-        name: 'Page404',
-        meta: { title: 'page404', noCache: true }
-      }
-    ]
-  },
-
-  {
-    path: '/error-log',
-    component: Layout,
-    redirect: 'noredirect',
-    children: [
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/components-demo/uEditor'),
+        name: 'EditNotice',
+        meta: { title: '编辑请假', noCache: true },
+        hidden: true
+      },
       {
-        path: 'log',
-        component: () => import('@/views/errorLog/index'),
-        name: 'ErrorLog',
-        meta: { title: 'errorLog', icon: 'bug' }
+        path: 'list',
+        component: () => import('@/views/leave/list'),
+        name: 'LeaveList',
+        meta: { title: '我的请假', icon: 'list' }
       }
     ]
   },
-
   {
-    path: '/excel',
+    path: '/form',
     component: Layout,
-    redirect: '/excel/export-excel',
-    name: 'Excel',
+    redirect: '/form/list',
+    name: 'Form',
     meta: {
-      title: 'excel',
-      icon: 'excel'
+      title: '表单',
+      icon: 'biaodan'
     },
     children: [
       {
-        path: 'export-excel',
-        component: () => import('@/views/excel/exportExcel'),
-        name: 'ExportExcel',
-        meta: { title: 'exportExcel' }
+        path: 'create',
+        component: () => import('@/views/form/create'),
+        name: 'CreateForm',
+        meta: { title: '新建表单', icon: 'edit' }
       },
       {
-        path: 'export-selected-excel',
-        component: () => import('@/views/excel/selectExcel'),
-        name: 'SelectExcel',
-        meta: { title: 'selectExcel' }
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/components-demo/uEditor'),
+        name: 'EditNotice',
+        meta: { title: '编辑请假', noCache: true },
+        hidden: true
       },
       {
-        path: 'upload-excel',
-        component: () => import('@/views/excel/uploadExcel'),
-        name: 'UploadExcel',
-        meta: { title: 'uploadExcel' }
+        path: 'list',
+        component: () => import('@/views/leave/list'),
+        name: 'LeaveList',
+        meta: { title: '我的请假', icon: 'list' }
       }
     ]
   },
-
   {
-    path: '/zip',
+    path: '/module',
     component: Layout,
-    redirect: '/zip/download',
-    alwaysShow: true,
-    meta: { title: 'zip', icon: 'zip' },
+    redirect: '/module/list',
+    name: 'Module',
+    meta: {
+      title: '模块管理',
+      icon: 'biaodan'
+    },
     children: [
       {
-        path: 'download',
-        component: () => import('@/views/zip/index'),
-        name: 'ExportZip',
-        meta: { title: 'exportZip' }
+        path: 'create',
+        component: () => import('@/views/form/create'),
+        name: 'CreateForm',
+        meta: { title: '新建模块', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/components-demo/uEditor'),
+        name: 'EditNotice',
+        meta: { title: '编辑请假', noCache: true },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/module/complexTable'),
+        name: 'ModuleList',
+        meta: { title: '模块列表', icon: 'list' }
       }
     ]
   },
-
   {
-    path: '/pdf',
+    path: '/system',
     component: Layout,
-    redirect: '/pdf/index',
+    redirect: '/system/list',
+    name: 'System',
+    meta: {
+      title: '系统管理',
+      icon: 'biaodan'
+    },
+    children: [
+      {
+        path: 'school',
+        component: () => import('@/views/system/schoolForm'),
+        name: 'SchoolForm',
+        meta: { title: '系统管理', icon: 'edit' }
+      },
+      {
+        path: 'wechatTemplate',
+        component: () => import('@/views/system/wechatTemplate'),
+        name: 'WechatTemplate',
+        meta: { title: '微信消息模板', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/components-demo/uEditor'),
+        name: 'EditNotice',
+        meta: { title: '编辑请假', noCache: true },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/module/complexTable'),
+        name: 'ModuleList',
+        meta: { title: '模块列表', icon: 'list' }
+      }
+    ]
+  },
+  { path: '*', redirect: '/404', hidden: true },
+  {
+    path: '/message',
+    component: Layout,
+    redirect: '/message/list',
+    name: 'Message',
+    meta: {
+      title: 'message',
+      icon: 'example'
+    },
+    hidden: true,
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/message/list'),
+        name: 'NoticeList',
+        meta: { title: '消息列表', icon: 'list' }
+      }
+    ]
+  },
+  {
+    path: '/myclass',
+    component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/pdf/index'),
-        name: 'PDF',
-        meta: { title: 'pdf', icon: 'pdf' }
+        component: () => import('@/views/myclass/index'),
+        name: '执教班级',
+        meta: { title: '执教班级', icon: 'tab' }
       }
     ]
   },
   {
-    path: '/pdf/download',
-    component: () => import('@/views/pdf/download'),
-    hidden: true
-  },
-
-  {
-    path: '/theme',
-    component: Layout,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/theme/index'),
-        name: 'Theme',
-        meta: { title: 'theme', icon: 'theme' }
-      }
-    ]
-  },
-
-  {
-    path: '/clipboard',
-    component: Layout,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/clipboard/index'),
-        name: 'ClipboardDemo',
-        meta: { title: 'clipboardDemo', icon: 'clipboard' }
-      }
-    ]
-  },
-
-  {
-    path: '/i18n',
+    path: '/score',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/i18n-demo/index'),
-        name: 'I18n',
-        meta: { title: 'i18n', icon: 'international' }
+        component: () => import('@/views/score/index'),
+        name: '学生成绩',
+        meta: { title: '学生成绩', icon: 'tab' }
       }
     ]
   },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://github.com/PanJiaChen/vue-element-admin',
-        meta: { title: 'externalLink', icon: 'link' }
-      }
-    ]
-  },
-
-  { path: '*', redirect: '/404', hidden: true }
+  tableRouter
 ]
