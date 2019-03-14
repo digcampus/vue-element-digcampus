@@ -33,7 +33,9 @@
           </el-table-column>
           <el-table-column label="附件" min-width="250px">
             <template slot-scope="scope">
-              <span>{{ scope.row.attachmentName }}</span>
+              <span class="el-tag el-tag--info el-tag--small">
+                <a class="link-type" @click="download(scope.row.url, scope.row.attachmentName)">{{ scope.row.attachmentName }}</a>
+              </span>
             </template>
           </el-table-column>
         </el-table>
@@ -83,22 +85,9 @@
 
 <script>
 import { fetchPv } from '@/api/article'
-import { fetchUploadUserList, updateStudent, createStudent, downloadZip } from '@/api/user'
+import { fetchUploadUserList, updateStudent, createStudent, downloadZip, downloadFile } from '@/api/user'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj ,such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
 
 export default {
   name: 'ComplexTable',
@@ -113,9 +102,6 @@ export default {
         deleted: 'danger'
       }
       return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
     }
   },
   props: {
@@ -151,7 +137,6 @@ export default {
         role: ''
       },
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: [{ name: '在读', id: 1 }, { name: '转学', id: 0 }],
       showReviewer: true,
@@ -189,6 +174,9 @@ export default {
     }
   },
   methods: {
+    download(url, name) {
+      downloadFile(url, name)
+    },
     resetParent() {
       this.formLabelAlign = {
         name: undefined,

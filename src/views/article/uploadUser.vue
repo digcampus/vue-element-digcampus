@@ -33,7 +33,10 @@
           </el-table-column>
           <el-table-column label="附件" min-width="250px">
             <template slot-scope="scope">
-              <span>{{ scope.row.attachmentName }}</span>
+              <span class="el-tag el-tag--info el-tag--small">
+                <i class="el-tag__close el-icon-close" @click="deleteAttachment(scope.row)"/>
+                <a class="link-type" @click="download(scope.row.url, scope.row.attachmentName)">{{ scope.row.attachmentName }}</a>
+              </span>
             </template>
           </el-table-column>
         </el-table>

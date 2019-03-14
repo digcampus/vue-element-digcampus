@@ -22,10 +22,15 @@
         </el-table-column>
         <el-table-column align="left" width="90px" label="发布者">
           <template slot-scope="scope">
-            <span>{{ scope.row.realname }}</span>
+            <span>{{ scope.row.publishUser }}</span>
           </template>
         </el-table-column>
-        <el-table-column width="180px" align="center" label="时间">
+        <el-table-column width="180px" align="center" label="修改时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.modifyTime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="180px" align="center" label="发布时间">
           <template slot-scope="scope">
             <span>{{ scope.row.modifyTime }}</span>
           </template>
