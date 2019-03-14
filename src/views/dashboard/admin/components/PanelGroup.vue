@@ -10,26 +10,36 @@
             mode="horizontal"
             @select="handleSelect">
             <div v-for="(item) in moduleList" :key="item.id" style="display: inline-block;">
-              <el-menu-item v-if="item.classifyList.length<2 && item.classifyList.length>0" :index="item.classifyList[0].classifyId+''" >
+              <el-menu-item v-if="item.moduleList.length == 0" :index="item.id+''" >
                 {{ item.moduleName }}
               </el-menu-item>
-              <el-submenu v-if="item.classifyList.length>1" :index="item.classifyList[0].classifyId+''">
+              <el-submenu v-if="item.moduleList.length>0" :index="item.id+''">
                 <template slot="title"> {{ item.moduleName }}</template>
-                <el-menu-item v-for="(item1, index) in item.classifyList" v-if="index>0" :key="item1.classifyId" :index="item1.classifyId + ''">
-                  {{ item1.classifyName }}
+                <el-menu-item v-for="(item1) in item.moduleList" :key="item1.id" :index="item1.id + ''">
+                  {{ item1.moduleName }}
                 </el-menu-item>
               </el-submenu>
             </div>
           </el-menu>
           <div class="line"/>
-          <div v-loading="listLoading" class="card-panel" style="min-height: 650px;padding-top:20px;" @click="handleSetLineChartData('purchases')">
+          <div v-loading="listLoading" class="card-panel" style="min-height: 700px;padding-top:20px;" @click="handleSetLineChartData('purchases')">
             <div v-for="(item) in articleList" :key="item.articleId" class="text item separatorLine" style="margin-left:20px;">
-              <a href="www.baidu.com">{{ item.title }}</a>
+              <router-link :to="{path: '/notice/'+item.articleId}" class="link-type" target="_blank">
+                <span><svg-icon v-if="item.upload===1" icon-class="uploadSvg" />{{ item.title }}</span>
+              </router-link>
               <span style="float:right">{{ item.createTime }}</span>
               <span style="color: #a7a7a7;float:right; margin-right:20px;">[ 其他 ]</span>
             </div>
             <div v-if="articleList.length>0" class="pagination-container" style="margin-top:15px;margin-left:20px;">
-              <el-pagination :current-page="1" :page-size="1" :total="20" background layout="total, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+              <el-pagination
+                :current-page="listQuery.page"
+                :page-sizes="[10,20,30, 50]"
+                :page-size="listQuery.limit"
+                :total="total"
+                background
+                layout="total, sizes, prev, pager, next, jumper"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"/>
             </div>
           </div>
         </el-card>
@@ -52,11 +62,13 @@ export default {
   data() {
     return {
       listQuery: {
-        fid: this.$store.state.user.fid
+        fid: this.$store.state.user.fid,
+        page: 1,
+        limit: 20
       },
       listArticleQuery: {
         fid: this.$store.getters.user.fid,
-        classifyId: undefined,
+        moduleId: undefined,
         page: 1,
         limit: 20
       },
@@ -97,6 +109,7 @@ export default {
     getArticleList() {
       this.listLoading = true
       fetchList(this.listArticleQuery).then(response => {
+        debugger
         this.articleList = response.data.result.list
         this.total = response.data.result.total
         this.listLoading = false
@@ -109,8 +122,12 @@ export default {
       fetchModuleList(this.listQuery).then(response => {
         this.moduleList = response.data.result
         if (this.moduleList) {
-          this.activeIndex = '4'
-          this.listArticleQuery.classifyId = 4
+          if (this.moduleList[0].moduleList.length > 0) {
+            this.activeIndex = this.moduleList[0].moduleList[0].id
+          } else {
+            this.activeIndex = this.moduleList[0].id
+          }
+          this.listArticleQuery.moduleId = this.activeIndex
           this.getArticleList()
         }
         this.listLoading = false
@@ -126,7 +143,7 @@ export default {
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
     },
     handleSelect(key, keyPath) {
-      this.listArticleQuery.classifyId = key
+      this.listArticleQuery.moduleId = key
       this.getArticleList()
       console.log(key, keyPath)
     },

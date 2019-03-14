@@ -44,7 +44,9 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog :visible.sync="dialogFormVisible" title="微信模板消息" append-to-body style="width: 2500px;margin: 0 auto 50px;height:2000px;">
+    <el-dialog :visible.sync="dialogFormVisible" :title="wechatDialog" append-to-body style="width: 2500px;margin: 0 auto 50px;height:2000px;">
+      <el-button type="success" size="mini" @click="showSelectUser">收件人</el-button><br>
+      <br>
       <span>详情地址: </span><el-input v-model="moduleTemplate.url" style="width: 500px;"/>
       <div v-for="(datas,index) in moduleTemplate.data" :key="index">
         <div v-for="(item,index2) in datas" :key="index2" style="display:inline-block;margin:5px;">
@@ -56,6 +58,51 @@
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
         <el-button type="primary" @click="createMsg">{{ $t('table.confirm') }}</el-button>
       </div>
+    </el-dialog>
+
+    <el-dialog :visible.sync="userDialogFormVisible" title="收件人">
+      <el-button :disabled="(article.receiverList.length>0 && selectIndex && selectIndex != 1) || selectTeacher || selectStudent" type="info" plain size="mini" style="margin-top:-150px;" @click="selectUser(1)">
+        添加教师或学生
+      </el-button>
+      <el-button :disabled="(article.receiverList.length>0 && selectIndex && selectIndex != 2) || selectTeacher || selectStudent" type="info" plain size="mini" style="margin-top:-150px;" @click="selectUser(2)">
+        添加班级
+      </el-button>
+      <el-button :disabled="(article.receiverList.length>0 && selectIndex && selectIndex != 3) || selectTeacher || selectStudent" type="info" plain size="mini" style="margin-top:-150px;" @click="selectUser(3)">
+        添加群组
+      </el-button>
+      <el-checkbox v-model="selectTeacher" :disabled="article.receiverList.length>0 && selectIndex && selectIndex < 4" class="filter-item" style="margin-left:15px;" @change="selectIndex=4">全体老师</el-checkbox>
+      <el-checkbox v-model="selectStudent" :disabled="article.receiverList.length>0 && selectIndex && selectIndex < 4" class="filter-item" @change="selectIndex=5">全体学生</el-checkbox>
+      <el-table
+        :data="article.attachmentList"
+        :height="300"
+        border
+        style="width:100%;overflow:auto;">
+        <el-table-column :label="$t('id')" align="center" min-width="10%">
+          <template slot-scope="scope">
+            <span>{{ scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="名称" min-width="30%" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.realname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="类型" min-width="30%" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.roles[0]==1">教师</span>
+            <span v-if="scope.row.roles[0]==2">学生</span>
+            <span v-if="scope.row.roles[0]==3">群组</span>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="!disabled" :label="$t('table.actions')" align="center" min-width="30%" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button type="danger" size="mini" @click="handleDeleteUser(scope.$index)">{{ $t('delete') }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogFormVisible = false">{{ $t('table.confirm') }}</el-button>
+      </span>
     </el-dialog>
   </div>
 
@@ -78,6 +125,23 @@ export default {
   },
   data() {
     return {
+      article: {
+        articleId: undefined,
+        fid: this.$store.state.user.fid,
+        title: undefined,
+        upload: 0,
+        type: '',
+        content: '',
+        group: undefined,
+        attachmentList: [],
+        receiverList: [],
+        status: 0,
+        moduleId: undefined,
+        commentDisabled: true
+      },
+      articleModuleList: [],
+      userDialogFormVisible: false,
+      wechatDialog: undefined,
       moduleTemplate: {},
       dialogFormVisible: false,
       list: null,
@@ -91,6 +155,9 @@ export default {
     this.getList()
   },
   methods: {
+    showSelectUser() {
+      this.userDialogFormVisible = true
+    },
     createMsg() {
       this.moduleTemplate.touser = ['oE7971YVuGnNbxnL3Fc-26Y5SdLA']
       publishWechatMsg(this.moduleTemplate).then(response => {
@@ -101,6 +168,7 @@ export default {
     },
     handlePublish(template) {
       getTemplateWidget(template.templateId, template.content).then(response => {
+        this.wechatDialog = template.title
         this.dialogFormVisible = true
         this.moduleTemplate = response.data.result
       })

@@ -15,6 +15,11 @@
             <span>{{ scope.$index + 1 }}</span>
           </template>
         </el-table-column>
+        <el-table-column align="left" width="90px" label="创建人">
+          <template slot-scope="scope">
+            <span>{{ scope.row.realname }}</span>
+          </template>
+        </el-table-column>
         <el-table-column align="left" width="90px" label="发布者">
           <template slot-scope="scope">
             <span>{{ scope.row.realname }}</span>

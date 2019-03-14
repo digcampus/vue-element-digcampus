@@ -23,7 +23,7 @@
           </el-table-column>
           <el-table-column label="姓名" width="150px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.userName }}</span>
+              <span>{{ scope.row.realname }}</span>
             </template>
           </el-table-column>
           <el-table-column label="上传时间" width="180px" align="center">
@@ -59,7 +59,7 @@
           </el-table-column>
           <el-table-column label="姓名" width="150px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.userName }}</span>
+              <span>{{ scope.row.realname }}</span>
             </template>
           </el-table-column>
           <el-table-column label="上传时间" width="180px" align="center">

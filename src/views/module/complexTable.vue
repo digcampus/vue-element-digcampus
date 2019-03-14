@@ -1,7 +1,5 @@
 <template>
   <div class="app-container">
-    <el-button v-if="$store.state.user.admin && type" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handlePublish">发布消息</el-button>
-
     <div class="filter-container" style="margin-top:-10px;">
       <el-button v-if="$store.state.user.admin && type" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     </div>
@@ -43,10 +41,10 @@
       </el-table-column>
       <el-table-column label="分类" align="center" min-width="120px">
         <template slot-scope="scope">
-          <div v-for="(item) in scope.row.classifyList" :gutter="1" :key="item.classifyId" type="flex" class="row-bg" justify="left" style="margin-top:2px;">
+          <div v-for="(item) in scope.row.moduleList" :gutter="1" :key="item.id" type="flex" class="row-bg" justify="left" style="margin-top:2px;">
             <div :span="12" style="float:left;margin:2px;">
               <span class="el-tag el-tag--info el-tag--small" style="float:left;">
-                <span class="link-type" @click="handleEditClass(scope.row)">{{ item.classifyName }}</span>
+                <span class="link-type" @click="handleEditClass(scope.row)">{{ item.moduleName }}</span>
               </span>
             </div>
         </div></template>
@@ -73,28 +71,22 @@
       </el-table-column>
     </el-table>
 
-    <fm-generate-form
-      ref="generateForm"
-      :data="jsonData"
-      :value="values"/>
-    <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="getData">{{ $t('table.add') }}</el-button>
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible1" append-to-body style="width: 800px;margin: 0 auto 50px;">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 90%; margin-left:10px;">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" append-to-body style="width: 800px;margin: 0 auto 10px;">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="100px" style="width: 90%; margin-left:10px;">
         <el-form-item label="模块名称" prop="moduleName">
           <el-input v-model="temp.moduleName" :maxlength="20"/>
         </el-form-item>
         <el-form-item label="分类" prop="address">
-          <el-row v-for="(classify,index) in temp.classifyList" :gutter="10" :key="classify.classifyId" type="flex" class="row-bg" justify="left" style="margin-top:5px;">
+          <el-row v-for="(module,index) in temp.moduleList" :gutter="10" :key="module.id" type="flex" class="row-bg" justify="left" style="margin-top:5px;">
             <el-col :span="12">
               <el-popover
-                v-model="classify.visiblePopover"
+                v-model="module.visiblePopover"
                 placement="top"
                 width="300"
                 trigger="click">
                 <el-form :model="formLabelAlign" label-position="right" label-width="80px">
                   <el-form-item label="分类名称">
-                    <el-input v-model="formLabelAlign.classifyName"/>
+                    <el-input v-model="formLabelAlign.moduleName"/>
                   </el-form-item>
                   <el-form-item label="状态">
                     <el-select v-model="formLabelAlign.status" class="filter-item" style="width: 100%;">
@@ -102,13 +94,13 @@
                     </el-select>
                   </el-form-item>
                   <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="classify.visiblePopover = false">取消</el-button>
+                    <el-button size="mini" type="text" @click="module.visiblePopover = false">取消</el-button>
                     <el-button type="primary" size="mini" @click="updateParent(index)">确定</el-button>
                   </div>
                 </el-form>
                 <div slot="reference">
                   <span class="el-tag el-tag--info el-tag--small" style="float:left;">
-                    <span class="link-type" @click="editParent(classify)">{{ classify.classifyName }}</span>
+                    <span class="link-type" @click="editParent(module)">{{ module.moduleName }}</span>
                     <i class="el-tag__close el-icon-close" @click="deleteParent(index)"/>
                   </span>
                 </div>
@@ -121,8 +113,8 @@
             width="300"
             trigger="click">
             <el-form ref="popoverForm" :rules="rules" :model="formLabelAlign" label-position="right" label-width="80px">
-              <el-form-item label="分类名称" prop="classifyName">
-                <el-input v-model="formLabelAlign.classifyName"/>
+              <el-form-item label="分类名称" prop="moduleName">
+                <el-input v-model="formLabelAlign.moduleName"/>
               </el-form-item>
               <el-form-item label="状态">
                 <el-select v-model="formLabelAlign.status" class="filter-item" style="width: 100%;">
@@ -203,37 +195,6 @@ export default {
   },
   data() {
     return {
-      jsonData: {
-        'list': [
-          {
-            'type': 'input',
-            'name': '单行文本',
-            'icon': 'icon-input',
-            'options': {
-              'width': '100%',
-              'defaultValue': '',
-              'required': false,
-              'dataType': 'string',
-              'pattern': '',
-              'placeholder': '',
-              'remoteFunc': 'func_1540908864000_94322'
-            },
-            'key': '1540908864000_94322',
-            'model': 'input_1540908864000_94322',
-            'rules': [
-              {
-                'type': 'string',
-                'message': '单行文本格式不正确'
-              }
-            ]
-          }
-        ],
-        'config': {
-          'labelWidth': 100,
-          'labelPosition': 'left',
-          'size': 'small'
-        }
-      }, // 表单配置中生成的json数据
       values: {}, // 表单需要显示的表单数据
       remoteFuncs: {
         // 组件配置时配置的远端方法,保持和配置时输入的名称一致
@@ -275,7 +236,7 @@ export default {
         sort: '+id'
       },
       formLabelAlign: {
-        classifyName: undefined,
+        moduleName: undefined,
         tel: '',
         role: '',
         status: 1
@@ -294,7 +255,7 @@ export default {
         realname: undefined,
         sex: 1,
         parentStuList: [],
-        classifyList: [],
+        moduleList: [],
         selectedOptions2: undefined,
         status: 1
       },
@@ -314,9 +275,7 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        moduleName: [{ required: true, message: '模块名称不能为空', trigger: 'blur' }],
-        classifyName: [{ required: true, message: '分类名称不能为空', trigger: 'blur' }]
-      },
+        moduleName: [{ required: true, message: '模块名称不能为空', trigger: 'blur' }] },
       downloadLoading: false,
       userList: []
     }
@@ -374,9 +333,9 @@ export default {
       this.$refs['popoverForm'].validate((valid) => {
         if (valid) {
           if (index > -1) {
-            this.temp.classifyList.splice(index, 1, this.formLabelAlign)
+            this.temp.moduleList.splice(index, 1, this.formLabelAlign)
           } else {
-            this.temp.classifyList.push(this.formLabelAlign)
+            this.temp.moduleList.push(this.formLabelAlign)
           }
           this.formLabelAlign.visiblePopover = false
         }
@@ -389,9 +348,6 @@ export default {
       })
     },
     getList() {
-      debugger
-      var d = this.moduleTemplate
-      console.log(d)
       this.listLoading = true
       fetchModuleList(this.listQuery).then(response => {
         this.list = response.data.result
@@ -399,7 +355,7 @@ export default {
       })
     },
     deleteParent(index) {
-      this.temp.classifyList.splice(index, 1)
+      this.temp.moduleList.splice(index, 1)
     },
     handleChange(value) {
       if (this.temp.clazz == null) {
@@ -440,7 +396,7 @@ export default {
         name: undefined,
         status: 1,
         parentStuList: [],
-        classifyList: [],
+        moduleList: [],
         address: undefined
       }
     },
@@ -487,7 +443,7 @@ export default {
         this.temp.enrollmentDate = new Date(this.temp.enrollmentDate)
       }
       // 避免数组浅拷贝，修改之前数据。
-      this.temp.classifyList = JSON.parse(JSON.stringify(this.temp.classifyList))
+      this.temp.moduleList = JSON.parse(JSON.stringify(this.temp.moduleList))
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {

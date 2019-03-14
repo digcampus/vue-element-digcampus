@@ -62,6 +62,11 @@
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="微信" width="200px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.openid }}</span>
+        </template>
+      </el-table-column>
       <el-table-column v-if="!classId" label="入职时间" width="160px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.enrollmentDate }}</span>

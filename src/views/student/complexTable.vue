@@ -48,7 +48,7 @@
           <span>{{ scope.row.stuNo }}</span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="身份证号" width="170px" align="center">
+      <el-table-column :show-overflow-tooltip="true" label="身份证号" width="200px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.idCard }}</span>
         </template>
@@ -78,24 +78,24 @@
           <span class="link-type" style="text-overflow:ellipsis;" @click="handleUpdate(scope.row, true)">{{ scope.row.address }}</span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="联系电话" width="110px" align="center">
+      <el-table-column :show-overflow-tooltip="true" label="联系电话" width="120px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.tel }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="!classId" label="入学时间" width="95px" align="center">
+      <el-table-column v-if="!classId" label="入学时间" width="120px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.enrollmentDate }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="!classId" :show-overflow-tooltip="true" label="年级" width="100px" align="center">
+      <el-table-column v-if="false" :show-overflow-tooltip="true" label="年级" width="100px" align="center">
         <template slot-scope="scope">
           <span>
             {{ scope.row.clazz == null ? '' : (scope.row.clazz.grade == null ? '' : scope.row.clazz.grade.name) }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column v-if="!classId" :show-overflow-tooltip="true" label="班级" width="120px" align="center">
+      <el-table-column v-if="!classId" :show-overflow-tooltip="true" label="班级" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.clazz == null ? '' : scope.row.clazz.name }}</span>
         </template>
