@@ -9,7 +9,7 @@
       </sticky>
       <el-form-item label="标题" style="margin-bottom:12px;" label-width="120px" prop="title">
         <el-col :span="12">
-          <el-input v-model="article.title" :rows="1" :minlength="4" :maxlength="50" type="text" placeholder="请输入标题(少于50字)" style="width:80%;"/>
+          <el-input v-model="article.title" :rows="1" :minlength="1" :maxlength="50" type="text" placeholder="请输入标题(少于50字)" style="width:80%;"/>
         </el-col>
         <el-col :span="1" class="line">收件人</el-col>
         <el-col :span="11">
@@ -182,7 +182,7 @@ export default {
       rules: {
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' },
-          { min: 4, max: 50, message: '长度必须在4到50个字符之间', trigger: 'blur' }
+          { min: 1, max: 50, message: '长度必须在4到50个字符之间', trigger: 'blur' }
         ]
       },
       isShowConfirm: false, // 用于控制整个窗口的显示/隐藏

@@ -70,6 +70,7 @@ export default {
         fid: this.$store.getters.user.fid,
         moduleId: undefined,
         page: 1,
+        status: 1,
         limit: 20
       },
       listLoading: true,
