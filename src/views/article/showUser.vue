@@ -5,7 +5,7 @@
         <complexTeacherTable ref="complexTeacherTable" :table-height="520 + 'px'" :type="false" style="margin-top:-20px;"/>
       </el-tab-pane>
       <el-tab-pane v-if="index == 1" label="学生">
-        <complexStudentTable ref="complexStudentTable" :table-height="470 + 'px'" :type="false" style="margin-top:-20px;"/>
+        <complexStudentTable ref="complexStudentTable" :table-height="470 + 'px'" :type="false" :limit="null" style="margin-top:-20px;"/>
       </el-tab-pane>
       <el-tab-pane v-if="index == 2" label="班级">
         <complexClassTable ref="complexClassTable" :table-height="450 + 'px'" :type="false" style="margin-top:-20px;"/>

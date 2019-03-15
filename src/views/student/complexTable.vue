@@ -138,7 +138,7 @@
     </el-table>
 
     <div class="pagination-container" style="margin-top:10px;">
-      <el-pagination :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+      <el-pagination :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" :total="total" :layout="limit?'total, sizes, prev, pager, next, jumper': 'total'" background @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
     </div>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" append-to-body width="40%">
@@ -293,6 +293,11 @@ export default {
     }
   },
   props: {
+    limit: {
+      type: Number,
+      default: 20
+
+    },
     type: {
       type: Boolean,
       default: true
@@ -317,7 +322,7 @@ export default {
       listQuery: {
         page: 1,
         fid: this.$store.state.user.fid,
-        limit: 20,
+        limit: this.limit,
         status: 1,
         address: undefined,
         gradeId: undefined,

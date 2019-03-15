@@ -52,8 +52,6 @@
       <el-button :disabled="(article.receiverList.length>0 && selectIndex && selectIndex != 3) || selectTeacher || selectStudent" type="info" plain size="mini" style="margin-top:-150px;" @click="selectUser(3)">
         添加群组
       </el-button>
-      <el-checkbox v-model="selectTeacher" :disabled="article.receiverList.length>0 && selectIndex && selectIndex < 4" class="filter-item" style="margin-left:15px;" @change="selectIndex=4">全体老师</el-checkbox>
-      <el-checkbox v-model="selectStudent" :disabled="article.receiverList.length>0 && selectIndex && selectIndex < 4" class="filter-item" @change="selectIndex=5">全体学生</el-checkbox>
       <el-table
         :data="article.attachmentList"
         :height="300"
@@ -74,6 +72,7 @@
             <span v-if="scope.row.roles[0]==1">教师</span>
             <span v-if="scope.row.roles[0]==2">学生</span>
             <span v-if="scope.row.roles[0]==3">群组</span>
+            <span v-if="scope.row.roles[0]==4">班级</span>
           </template>
         </el-table-column>
         <el-table-column v-if="!disabled" :label="$t('table.actions')" align="center" min-width="30%" class-name="small-padding fixed-width">
@@ -313,12 +312,20 @@ export default {
         tempList.push(userReceiver)
       }
       var groupList = data.get('group')
-      for (var i in groupList) {
+      for (const i in groupList) {
         var groupReceiver = {}
         groupReceiver.receiveUserId = groupList[i].groupId
         groupReceiver.realname = groupList[i].name
         groupReceiver.roles = [3]
         tempList.push(groupReceiver)
+      }
+      var classList = data.get('class')
+      for (const i in classList) {
+        var classReceiver = {}
+        classReceiver.receiveUserId = classList[i].id
+        classReceiver.realname = classList[i].name
+        classReceiver.roles = [4]
+        tempList.push(classReceiver)
       }
       for (const v of tempList) {
         var flag = true

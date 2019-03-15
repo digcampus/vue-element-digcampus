@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-checkbox class="filter-item">全体老师</el-checkbox>
-      <el-checkbox class="filter-item">全体学生</el-checkbox>
+      <el-checkbox v-model="checkedTeacher" class="filter-item">本班老师</el-checkbox>
+      <el-checkbox v-model="checkedStudent" class="filter-item">本班学生</el-checkbox>
     </div>
     <el-table
       v-loading="listLoading"
@@ -60,6 +60,8 @@ export default {
   },
   data() {
     return {
+      checkedTeacher: true,
+      checkedStudent: true,
       hackReset: true,
       tableKey: 0,
       list: null,
@@ -107,6 +109,9 @@ export default {
     this.getList()
   },
   methods: {
+    getSelectClass() {
+      return this.classList
+    },
     handleSelectionChange(val) {
       this.classList = val
     },
