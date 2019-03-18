@@ -59,7 +59,6 @@
       <br>
       <social-sign />
     </el-dialog>
-
   </div>
 </template>
 

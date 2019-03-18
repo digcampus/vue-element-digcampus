@@ -7,7 +7,7 @@ export function loginByUsername(username, password, fid) {
     fid
   }
   return request({
-    url: '/user/login',
+    url: '/login/login',
     method: 'get',
     params: data
   })
@@ -15,7 +15,7 @@ export function loginByUsername(username, password, fid) {
 
 export function logout() {
   return request({
-    url: '/user/logout',
+    url: '/login/logout',
     method: 'get'
   })
 }

@@ -135,6 +135,11 @@
             <el-option v-for="item in statusOptions" :key="item.key" :label="item.name" :value="item.key"/>
           </el-select>
         </el-form-item>
+        <el-form-item label="DndList">
+          <div class="editor-container">
+            <dnd-list :list1="temp.moduleList" list1-title="List" />
+          </div>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
@@ -150,6 +155,7 @@ import { fetchPv } from '@/api/article'
 import { fetchModuleList, fetchGradeList, createModule, deleteStudent } from '@/api/user'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
+import DndList from '@/components/DndList'
 
 const calendarTypeOptions = [
   { key: 0, display_name: '关闭' },
@@ -167,7 +173,8 @@ export default {
   },
   components: {
     // <my-component> 将只在父组件模板中可用
-    'my-component': Child
+    'my-component': Child,
+    DndList
   },
   filters: {
     statusFilter(status) {
@@ -259,7 +266,7 @@ export default {
         selectedOptions2: undefined,
         status: 1
       },
-      dialogFormVisible: false,
+      dialogFormVisible: true,
       dialogStatus: 'create',
       textMap: {
         update: this.$t('edit'),

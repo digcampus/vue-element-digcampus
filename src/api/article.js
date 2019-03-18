@@ -2,6 +2,14 @@ import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
+    url: '/article/list',
+    method: 'get',
+    params: query
+  })
+}
+
+export function fetchArticleList(query) {
+  return request({
     url: '/ueditor/list',
     method: 'get',
     params: query

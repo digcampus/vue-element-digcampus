@@ -238,7 +238,6 @@ export default {
       }
     },
     handleChange(moduleList) {
-      debugger
       if (moduleList.length > 0) {
         this.article.moduleId = moduleList[moduleList.length - 1]
       } else {

@@ -25,10 +25,10 @@ const componentsRouter = {
       meta: { title: 'markdown' }
     },
     {
-      path: 'ueditor',
-      component: () => import('@/views/components-demo/uEditor'),
-      name: 'uEditorDemo',
-      meta: { title: 'UEditor' }
+      path: 'json-editor',
+      component: () => import('@/views/components-demo/jsonEditor'),
+      name: 'JsonEditorDemo',
+      meta: { title: 'jsonEditor' }
     },
     {
       path: 'splitpane',

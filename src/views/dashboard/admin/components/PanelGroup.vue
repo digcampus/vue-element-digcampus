@@ -24,7 +24,7 @@
           <div class="line"/>
           <div v-loading="listLoading" class="card-panel" style="min-height: 700px;padding-top:20px;" @click="handleSetLineChartData('purchases')">
             <div v-for="(item) in articleList" :key="item.articleId" class="text item separatorLine" style="margin-left:20px;">
-              <router-link :to="{path: '/notice/'+item.articleId}" class="link-type" target="_blank">
+              <router-link :to="{path: '/article/'+item.articleId}" class="link-type" target="_blank">
                 <span><svg-icon v-if="item.upload===1" icon-class="uploadSvg" />{{ item.title }}</span>
               </router-link>
               <span style="float:right">{{ item.createTime }}</span>
@@ -51,7 +51,7 @@
 <script>
 import CountTo from 'vue-count-to'
 import { fetchModuleList } from '@/api/user'
-import { fetchList } from '@/api/article'
+import { fetchArticleList } from '@/api/article'
 
 const cityOptions = ['上海', '北京', '广州', '深圳']
 
@@ -109,8 +109,7 @@ export default {
   methods: {
     getArticleList() {
       this.listLoading = true
-      fetchList(this.listArticleQuery).then(response => {
-        debugger
+      fetchArticleList(this.listArticleQuery).then(response => {
         this.articleList = response.data.result.list
         this.total = response.data.result.total
         this.listLoading = false

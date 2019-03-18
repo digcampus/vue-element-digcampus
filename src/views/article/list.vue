@@ -37,7 +37,7 @@
         </el-table-column>
         <el-table-column :show-overflow-tooltip="true" min-width="250px" align="left" label="标题">
           <template slot-scope="scope">
-            <router-link :to="{path: '/notice/'+scope.row.articleId}" class="link-type" target="_blank">
+            <router-link :to="{path: '/article/'+scope.row.articleId}" class="link-type" target="_blank">
               <span><svg-icon v-if="scope.row.upload===1" icon-class="uploadSvg" />{{ scope.row.title }}</span>
             </router-link>
           </template>
@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import { fetchList, deleteArticle, publishArticle } from '@/api/article'
+import { fetchArticleList, deleteArticle, publishArticle } from '@/api/article'
 import { downloadFile, deleteAttachment } from '@/api/user'
 import uploadUser from '@/views/notice/uploadUser'
 
@@ -152,7 +152,7 @@ export default {
   methods: {
     deleteArticle(row) {
       deleteArticle(row.articleId).then(() => {
-        fetchList(this.listQuery).then(response => {
+        fetchArticleList(this.listQuery).then(response => {
           this.list = response.data.result.list
           this.total = response.data.result.total
           this.listLoading = false
@@ -186,7 +186,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      fetchArticleList(this.listQuery).then(response => {
         this.list = response.data.result.list
         this.total = response.data.result.total
         this.listLoading = false
