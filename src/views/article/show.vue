@@ -2,7 +2,7 @@
   <div class="app-container cuhksz-detail">
     <div class="caption-3_nUnnKX">
       <h1 class="topic-_XJ6ViSR">{{ notice.title }}</h1>
-      <p><span class="date-3fxruanH">发布时间: &nbsp; {{ notice.createTime }}</span><span class="source-1Pn6hUH2">&nbsp;&nbsp;发布人:&nbsp;{{ notice.publishUser? notice.publishUser:notice.name }}</span></p>
+      <p><span class="date-3fxruanH">发布时间: &nbsp; {{ notice.createTime }}</span><span class="source-1Pn6hUH2">&nbsp;&nbsp;发布人:&nbsp;{{ notice.publishUser? notice.publishUser: notice.realname }}</span></p>
     </div>
     <span v-html="message"/>
   </div>
