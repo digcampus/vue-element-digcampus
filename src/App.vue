@@ -1,14 +1,14 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <script>
-export default{
+export default {
   name: 'App',
   created() {
-    // åœ¨é¡µé¢åŠ è½½æ—¶è¯»å–sessionStorageé‡Œçš„çŠ¶æ€ä¿¡æ¯
+    // ÔÚÒ³Ãæ¼ÓÔØÊ±¶ÁÈ¡sessionStorageÀïµÄ×´Ì¬ĞÅÏ¢
     if (sessionStorage.getItem('store')) {
       this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(sessionStorage.getItem('store'))))
     }
