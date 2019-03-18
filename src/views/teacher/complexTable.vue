@@ -5,6 +5,12 @@
       <el-select v-model="listQuery.sex" placeholder="性别" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
       </el-select>
+      <el-select v-if="!classId" v-model="listQuery.gradeId" placeholder="年级" clearable class="filter-item" style="width: 130px" @change="updateClass">
+        <el-option v-for="item in gradeList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+      <el-select v-if="!classId" v-model="listQuery.classId" placeholder="班级" clearable class="filter-item" style="width: 150px">
+        <el-option v-for="item in classList" :key="item.id" :label="item.name" :value="item.id"/>
+      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <el-button v-if="$store.state.user.admin && !classId" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
       <el-popover
@@ -483,6 +489,7 @@ export default {
       return this.userList
     },
     updateClass() {
+      this.listQuery.classId = undefined
       for (const index in this.gradeList) {
         const grade = this.gradeList[index]
         if (grade.id === this.listQuery.gradeId) {
@@ -510,7 +517,7 @@ export default {
       this.multipleSelection = []
       this.listLoading = true
       fetchTeacherList(this.listQuery).then(response => {
-        this.list = response.data.result.list
+        this.list = response.data.result.list.filter(data => !this.listQuery.gradeId || data.classMap.length > 0)
         this.total = response.data.result.total
         this.listLoading = false
       }
