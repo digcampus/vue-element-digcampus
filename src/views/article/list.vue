@@ -15,12 +15,12 @@
             <span>{{ scope.$index + 1 }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" width="90px" label="创建人">
+        <el-table-column :show-overflow-tooltip="true" align="left" width="100px" label="创建人">
           <template slot-scope="scope">
             <span>{{ scope.row.realname }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" width="90px" label="发布者">
+        <el-table-column :show-overflow-tooltip="true" align="left" width="100px" label="发布者">
           <template slot-scope="scope">
             <span>{{ scope.row.publishUser }}</span>
           </template>
@@ -45,7 +45,7 @@
         <el-table-column align="center" width="80px" label="状态">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.status==0" :type="scope.row.status | statusFilter">草稿</el-tag>
-            <el-tag v-if="scope.row.status==1" :type="scope.row.status | statusFilter" class="link-type"><span @click="showUploadData(scope.row)">已发布</span></el-tag>
+            <el-tag v-if="scope.row.status==1 && $store.getters.user.uid==scope.row.createUserId" :type="scope.row.status | statusFilter" class="link-type"><span @click="showUploadData(scope.row)">已发布</span></el-tag>
             <el-tag v-if="scope.row.status==2" :type="scope.row.status | statusFilter">关闭</el-tag>
           </template>
         </el-table-column>
@@ -72,7 +72,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$t('action')" align="left" width="210">
-          <template slot-scope="scope">
+          <template v-if="$store.getters.user.uid==scope.row.createUserId" slot-scope="scope">
             <router-link :to="'/article/edit/'+scope.row.articleId">
               <el-button size="mini" type="primary" @click="handleUpdate(scope.row, scope.$index, true)">编辑</el-button>
             </router-link>
