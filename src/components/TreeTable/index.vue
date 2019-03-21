@@ -34,7 +34,13 @@
               @change="handleCheckAllChange(scope.row)"
             />
           </template>
-          {{ scope.row[item.key] }}
+
+          <el-button v-if="item.label=='操作' && scope.row._level == 0" type="danger" size="mini" @click="handleDeleteUser(scope.row)">{{ $t('delete') }}</el-button>
+          <span v-else-if="scope.row[item.key]==1">教师</span>
+          <span v-else-if="scope.row[item.key]==2">学生</span>
+          <span v-else-if="scope.row[item.key]==3">群组</span>
+          <span v-else-if="scope.row[item.key]==4">班级</span>
+          <span v-else>{{ scope.row[item.key] }}</span>
         </slot>
       </template>
     </el-table-column>
@@ -113,6 +119,9 @@ export default {
       } else {
         this.data.splice(_index, 1)
       }
+    },
+    handleDeleteUser(row) {
+      this.delete(row)
     },
     getData() {
       return this.tableData

@@ -30,7 +30,7 @@
 
     <tree-table :key="key" :default-expand-all="defaultExpandAll" :data="data" :columns="columns" border>
       <template slot="scope" slot-scope="{scope}">
-        <el-tag>level: {{ scope.row._level }}</el-tag>
+        <el-tag>level11: {{ scope.row._level }}</el-tag>
         <el-tag>expand: {{ scope.row._expand }}</el-tag>
         <el-tag>select: {{ scope.row._select }}</el-tag>
       </template>
@@ -60,12 +60,12 @@ export default {
           checkbox: true
         },
         {
-          label: '',
+          label: 'value',
           key: 'id',
           expand: true
         },
         {
-          label: 'Event',
+          label: 'Event11',
           key: 'event',
           width: 200,
           align: 'left'

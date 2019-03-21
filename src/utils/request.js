@@ -41,7 +41,6 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-    debugger
     if (!res.code) {
       console.log('mock数据请求...' + response.data)
       return response

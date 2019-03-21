@@ -1,16 +1,17 @@
 <template>
   <div class="app-container">
     <div class="filter-container" style="margin-top:-10px;">
-      <el-select v-model="listQuery.examId" placeholder="考试名称" value-key="id" clearable class="filter-item" style="width: 250px" @change="fetchSemesterGradeList">
-        <el-option v-for="item in examList" :key="item.id" :label="item.name" :value="item.id" />
+      <el-select v-model="listQuery.exam" placeholder="考试名称" value-key="id" clearable class="filter-item" style="width: 250px" @change="fetchSemesterGradeList">
+        <el-option v-for="item in examList" :key="item.id" :label="item.name" :value="item" />
       </el-select>
-      <el-select v-model="listQuery.gradeId" placeholder="年级" value-key="id" clearable class="filter-item" style="width: 250px" @change="getClass">
-        <el-option v-for="item in semesterGradeList" :key="item.id" :label="item.name" :value="item.id" />
+      <el-select v-model="listQuery.grade" placeholder="年级" value-key="id" clearable class="filter-item" style="width: 250px" @change="getClass">
+        <el-option v-for="item in semesterGradeList" :key="item.id" :label="item.name" :value="item" />
       </el-select>
-      <el-select v-model="listQuery.classId" placeholder="班级" value-key="id" clearable class="filter-item" style="width: 250px" >
-        <el-option v-for="item in classList" :key="item.id" :label="item.name" :value="item.id" />
+      <el-select v-model="listQuery.class" placeholder="班级" value-key="id" clearable class="filter-item" style="width: 250px" @change="getImportFileUrl">
+        <el-option v-for="item in classList" :key="item.id" :label="item.name" :value="item" />
       </el-select>
-      <el-button v-waves :disabled="!listQuery.gradeId" class="filter-item" type="primary" icon="el-icon-search" @click="fetchScoreListByClassAndSemester">{{ $t('table.search') }}</el-button>
+      <el-button v-waves :disabled="!listQuery.grade.id" class="filter-item" type="primary" icon="el-icon-search" @click="fetchScoreListByClassAndSemester">{{ $t('table.search') }}</el-button>
+      <el-button v-waves :disabled="!listQuery.class.id" class="filter-item" type="primary" icon="el-icon-upload" @click="dialogUploadVisible = true">上传成绩</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -83,14 +84,31 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel"/>
-        <el-table-column prop="pv" label="Pv"/>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
+    <el-dialog :visible.sync="dialogUploadVisible" title="上传成绩" width="30%">
+      <span class="el-tag el-tag--info el-tag--small" style="margin:5px;">
+        {{ listQuery.exam.name }} - {{ listQuery.grade.name }} - {{ listQuery.class.name }}
       </span>
+      <el-upload
+        ref="upload"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :file-list="excelList"
+        :auto-upload="false"
+        :limit="1"
+        :on-exceed="handleExceed"
+        :on-success="handleSuccess"
+        :before-upload="beforeUpload"
+        :before-remove="beforeRemove"
+        :action="importFileUrl"
+        accept=".xls,.xlsx"
+        class="upload-demo">
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传excel文件，且不超过5MB</div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogUploadVisible = false">{{ $t('table.confirm') }}</el-button>
+      </div>
     </el-dialog>
 
     <edit-grade ref="editGrade" @listenToChildEvent="updateGradeRow"/>
@@ -137,8 +155,12 @@ export default {
         sort: '+id',
         gradeId: undefined,
         classId: undefined,
-        examId: undefined
+        examId: undefined,
+        exam: {},
+        grade: {},
+        class: {}
       },
+      importFileUrl: undefined,
       importanceOptions: [1, 2, 3],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
@@ -152,6 +174,7 @@ export default {
         type: '',
         status: 'published'
       },
+      dialogUploadVisible: false,
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -171,7 +194,13 @@ export default {
       scoreList: [],
       semesterGradeList: [],
       classList: [],
-      showClass: undefined
+      showClass: undefined,
+      excelList1: [
+        { name: 'food.jpeg',
+          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+        }],
+      excelList: [
+      ]
     }
   },
   created() {
@@ -179,9 +208,44 @@ export default {
     this.fetchGradeList()
   },
   methods: {
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    handleSuccess(response, file, excelList) {
+      debugger
+      if (response == null) {
+        return
+      }
+    },
+    getImportFileUrl() {
+      this.importFileUrl = window.UEDITOR_HOME_URL + 'course/importExcel/' + this.listQuery.classId
+    },
+    beforeUpload(file) {
+      const isExcel = (file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      const isLt2M = file.size / 1024 / 1024 < 5
+      if (!isExcel) {
+        this.$message.error('只能上传Excel文件!')
+      }
+      if (!isLt2M) {
+        this.$message.error('Excel文件大小不能超过5MB!')
+      }
+      return isExcel && isLt2M
+    },
+    handleRemove(file, excelList) {
+      console.log(file, excelList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleExceed(files, excelList) {
+      this.$message.warning(`只能上传一个文件，请先删除之前文件!`)
+    },
+    beforeRemove(file, excelList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
     fetchSemesterGradeList() {
-      if (this.listQuery.examId) {
-        fetchSemesterGradeList(this.listQuery.examId).then(response => {
+      if (this.listQuery.exam) {
+        fetchSemesterGradeList(this.listQuery.exam.id).then(response => {
           this.semesterGradeList = response.data.result
         })
       }
@@ -192,10 +256,10 @@ export default {
       })
     },
     getClass() {
-      if (this.listQuery.gradeId) {
+      if (this.listQuery.grade) {
         for (const index in this.gradeList) {
           const grade = this.gradeList[index]
-          if (grade.id === this.listQuery.gradeId) {
+          if (grade.id === this.listQuery.grade.id) {
             this.classList = grade.clazzList
           }
         }
@@ -249,7 +313,7 @@ export default {
     fetchScoreListByClassAndSemester() {
       this.showClass = !this.listQuery.classId
       this.listLoading = true
-      fetchScoreListByClassAndSemester(this.listQuery.examId, this.listQuery.gradeId, this.listQuery.classId).then(response => {
+      fetchScoreListByClassAndSemester(this.listQuery.exam.id, this.listQuery.grade.id, this.listQuery.class.id).then(response => {
         this.scoreList = response.data.result
         this.listLoading = false
       })

@@ -52,6 +52,7 @@
       <el-button :disabled="(article.receiverList.length>0 && selectIndex && selectIndex != 3) || selectTeacher || selectStudent" type="info" plain size="mini" style="margin-top:-150px;" @click="selectUser(3)">
         添加群组
       </el-button>
+      <tree-table ref="treeTable" :key="key" :default-expand-all="defaultExpandAll" :data="data" :columns="columns" border/>
       <el-table
         :data="article.attachmentList"
         :height="300"
@@ -117,10 +118,12 @@ import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 import { fetchTeacherList, fetchGroupList, fetchModuleList } from '@/api/user'
 import showUser from '@/views/article/showUser'
+import treeTable from '@/components/TreeTable'
+import data from './data'
 
 export default {
   name: 'ArticleDetail',
-  components: { showUser, VueUeditorWrap, Tinymce, MDinput, Upload, Sticky, Warning, CommentDropdown, PlatformDropdown, SourceUrlDropdown },
+  components: { treeTable, showUser, VueUeditorWrap, Tinymce, MDinput, Upload, Sticky, Warning, CommentDropdown, PlatformDropdown, SourceUrlDropdown },
   props: {
     isEdit: {
       type: Boolean,
@@ -129,6 +132,26 @@ export default {
   },
   data() {
     return {
+      data: data,
+      defaultExpandAll: false,
+      key: 1,
+      columns: [
+        {
+          label: '姓名',
+          key: 'realname',
+          expand: true
+        },
+        {
+          label: '类型',
+          key: 'roles',
+          width: 200,
+          align: 'left'
+        },
+        {
+          label: '操作',
+          key: 'operation'
+        }
+      ],
       props: {
         label: 'moduleName',
         value: 'id',
