@@ -68,9 +68,10 @@ const user = {
     LoginByUsername({ commit }, userInfo) {
       const username = userInfo.username.trim()
       const fid = parseInt(userInfo.school.id)
+      const role = parseInt(userInfo.role)
       const semesterId = parseInt(userInfo.school.semester.semesterId)
       return new Promise((resolve, reject) => {
-        loginByUsername(username, userInfo.password, fid).then(response => {
+        loginByUsername(username, userInfo.password, fid, role).then(response => {
           if (response.data.code === 200) {
             const data = response.data.result
             commit('SET_TOKEN', data.token)

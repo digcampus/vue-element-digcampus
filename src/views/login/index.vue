@@ -2,9 +2,9 @@
   <div class="login-container">
 
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form card-box" auto-complete="on" label-position="left">
-
       <div class="title-container">
-        <h3 class="title">登录</h3>
+        <h3 class="title">{{ login }}</h3>
+        <svg-icon class-name="international-icon set-language" icon-class="changeRole" style="cursor:pointer" @click="changeRole()"/>
       </div>
 
       <el-form-item prop="school">
@@ -101,7 +101,8 @@ export default {
         username: undefined,
         password: undefined,
         school: undefined,
-        fid: undefined
+        fid: undefined,
+        role: 1
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -114,7 +115,8 @@ export default {
       redirect: undefined,
       options4: [],
       school: {},
-      loadingSchool: false
+      loadingSchool: false,
+      login: '登录'
     }
   },
   watch: {
@@ -132,6 +134,15 @@ export default {
     // window.removeEventListener('hashchange', this.afterQRScan)
   },
   methods: {
+    changeRole() {
+      if (this.login === '管理员登录') {
+        this.loginForm.role = 1
+        this.login = '登录'
+      } else {
+        this.loginForm.role = 0
+        this.login = '管理员登录'
+      }
+    },
     remoteMethod(query) {
       if (query && query.trim().length > 0) {
         this.loadingSchool = true
@@ -286,7 +297,7 @@ $light_gray:#eee;
       font-weight: bold;
     }
     .set-language {
-      color: #fff;
+      color: #050505;
       position: absolute;
       top: 5px;
       right: 0px;

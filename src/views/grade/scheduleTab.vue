@@ -161,7 +161,7 @@ export default {
         fid: this.$store.state.user.fid,
         id: undefined,
         year: 2018,
-        semester: 2,
+        semester: this.$store.state.user.semesterId,
         teacherId: undefined,
         week: undefined,
         courseId: undefined,
