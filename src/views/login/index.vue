@@ -7,17 +7,27 @@
         <h3 class="title">登录</h3>
       </div>
 
-      <el-form-item v-if="false">
+      <el-form-item prop="school">
         <span class="svg-container svg-container_login">
           <svg-icon icon-class="school" />
         </span>
-        <el-input
-          v-model="loginForm.fid"
-          placeholder="学校名称"
-          name="fid"
-          type="text"
-          auto-complete="on"
-        />
+        <el-select
+          v-model="loginForm.school"
+          :remote-method="remoteMethod"
+          :loading="loadingSchool"
+          clearable
+          filterable
+          remote
+          style="width:90%"
+          reserve-keyword
+          placeholder="请输入学校名称">
+          <el-option
+            v-for="item in options4"
+            :key="item.id"
+            :label="item.schoolName"
+            :value="item"
+            style="width:100%"/>
+        </el-select>
       </el-form-item>
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
@@ -64,6 +74,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { fetchSchoolList } from '@/api/user'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './socialsignin'
 
@@ -89,16 +100,21 @@ export default {
       loginForm: {
         username: undefined,
         password: undefined,
+        school: undefined,
         fid: undefined
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        school: [{ required: true, message: '请输入学校名称', trigger: 'change' }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
       loading: false,
       showDialog: false,
-      redirect: undefined
+      redirect: undefined,
+      options4: [],
+      school: {},
+      loadingSchool: false
     }
   },
   watch: {
@@ -116,6 +132,22 @@ export default {
     // window.removeEventListener('hashchange', this.afterQRScan)
   },
   methods: {
+    remoteMethod(query) {
+      if (query && query.trim().length > 0) {
+        this.loadingSchool = true
+        setTimeout(() => {
+          fetchSchoolList(query).then(response => {
+            this.loadingSchool = false
+            this.options4 = response.data.result.filter(item => {
+              return item.schoolName.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1
+            })
+          })
+        }, 200)
+      } else {
+        this.options4 = []
+      }
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''

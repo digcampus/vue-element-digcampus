@@ -308,3 +308,13 @@ export function fetchWechatTemplateList(fid) {
     method: 'get'
   })
 }
+
+// 根据学校名称，模糊查询
+export function fetchSchoolList(query) {
+  debugger
+  return request({
+    url: '/school/list',
+    method: 'get',
+    params: { 'name': query }
+  })
+}

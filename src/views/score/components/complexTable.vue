@@ -212,13 +212,12 @@ export default {
       this.$refs.upload.submit()
     },
     handleSuccess(response, file, excelList) {
-      debugger
       if (response == null) {
         return
       }
     },
     getImportFileUrl() {
-      this.importFileUrl = window.UEDITOR_HOME_URL + 'course/importExcel/' + this.listQuery.classId
+      this.importFileUrl = window.UEDITOR_HOME_URL + 'course/importExcel/' + this.listQuery.exam.id + '/' + this.listQuery.grade.id + '/' + this.listQuery.class.id
     },
     beforeUpload(file) {
       const isExcel = (file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

@@ -57,6 +57,9 @@ const user = {
     },
     SET_MSGCOUNT: (state, msgcount) => {
       state.msgcount = msgcount
+    },
+    SET_SEMESTER: (state, semesterId) => {
+      state.semesterId = semesterId
     }
   },
 
@@ -64,14 +67,15 @@ const user = {
     // 用户名登录
     LoginByUsername({ commit }, userInfo) {
       const username = userInfo.username.trim()
-      userInfo.fid = 1
-      const fid = parseInt(userInfo.fid)
+      const fid = parseInt(userInfo.school.id)
+      const semesterId = parseInt(userInfo.school.semester.semesterId)
       return new Promise((resolve, reject) => {
         loginByUsername(username, userInfo.password, fid).then(response => {
           if (response.data.code === 200) {
             const data = response.data.result
             commit('SET_TOKEN', data.token)
             commit('SET_FID', fid)
+            commit('SET_SEMESTER', semesterId)
             commit('SET_NAME', data.realname)
             commit('SET_MSGCOUNT', '')
             commit('SET_ADMIN', data.roles.includes(1))

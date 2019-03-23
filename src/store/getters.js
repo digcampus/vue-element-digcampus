@@ -9,6 +9,7 @@ const getters = {
   avatar: state => state.user.avatar,
   name: state => state.user.name,
   fid: state => state.user.fid,
+  semesterId: state => state.user.semesterId,
   uid: state => state.user.uid,
   introduction: state => state.user.introduction,
   status: state => state.user.status,

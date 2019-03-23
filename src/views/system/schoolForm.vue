@@ -11,6 +11,9 @@
       <el-form-item label="学校名称" prop="schoolName">
         <el-input v-model="form.schoolName"/>
       </el-form-item>
+      <el-form-item label="学期名称" >
+        <el-input v-model="form.semester.semesterName"/>
+      </el-form-item>
       <el-form-item label="地区编号" prop="areaCode">
         <el-input v-model="form.areaCode"/>
       </el-form-item>
@@ -42,7 +45,8 @@ export default {
         areaCode: '',
         schoolCode: '',
         appid: '',
-        appsecret: ''
+        appsecret: '',
+        semester: {}
       },
       rules: {
         schoolName: [{ required: true, message: '学校名称必填', trigger: 'change' }],
