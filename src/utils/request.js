@@ -75,7 +75,7 @@ service.interceptors.response.use(
         })
       } else {
         Message({
-          message: '其他异常: ' + res.message,
+          message: '异常: ' + res.message,
           type: 'error',
           duration: 5 * 1000
         })

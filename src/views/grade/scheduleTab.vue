@@ -169,7 +169,7 @@ export default {
       }
     },
     updateParent(week, sequence, item) {
-      if (this.classId) {
+      if (this.classId && this.$store.state.user.admin) {
         this.resetParent()
         if (item) {
           this.formLabelAlign.id = item.id

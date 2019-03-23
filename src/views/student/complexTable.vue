@@ -120,16 +120,16 @@
           <el-dropdown class="avatar-container right-menu-item" trigger="click">
             <el-button style="cursor:pointer" class="el-icon-caret-bottom"/>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-if="$store.state.user.admin">
-                <span style="display:block;" @click="handleUpdate(scope.row, false)">{{ $t('edit') }}</span>
-              </el-dropdown-item>
-              <el-dropdown-item divided>
-                <span style="display:block;" @click="handleDelete(scope.row,'deleted')">{{ $t('delete') }}</span>
-              </el-dropdown-item>
-              <el-dropdown-item divided>
+              <el-dropdown-item>
                 <router-link :to="{path: '/score/index'}">
                   <span style="display:block;">成绩</span>
                 </router-link>
+              </el-dropdown-item>
+              <el-dropdown-item v-if="$store.state.user.admin" divided>
+                <span style="display:block;" @click="handleUpdate(scope.row, false)">{{ $t('edit') }}</span>
+              </el-dropdown-item>
+              <el-dropdown-item v-if="$store.state.user.admin" divided>
+                <span style="display:block;" @click="handleDelete(scope.row,'deleted')">{{ $t('delete') }}</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>

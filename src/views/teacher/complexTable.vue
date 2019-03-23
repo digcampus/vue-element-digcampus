@@ -14,6 +14,7 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <el-button v-if="$store.state.user.admin && !classId" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
       <el-popover
+        v-if="$store.state.user.admin"
         v-model="courseData.visiblePopover"
         placement="top"
         width="300"
@@ -103,7 +104,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="70" class-name="small-padding fixed-width">
+      <el-table-column v-if="$store.state.user.admin" :label="$t('table.actions')" align="center" width="70" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-dropdown trigger="click">
             <!-- <svg-icon icon-class="action" style="width: 1.2em;height: 1.2em;cursor:pointer"/> -->

@@ -67,7 +67,7 @@ export default {
         limit: 20
       },
       listArticleQuery: {
-        fid: this.$store.getters.user.fid,
+        fid: this.$store.state.user.fid,
         moduleId: undefined,
         page: 1,
         status: 1,

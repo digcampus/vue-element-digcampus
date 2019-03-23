@@ -166,74 +166,6 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/module',
-    component: Layout,
-    redirect: '/module/list',
-    name: 'Module',
-    meta: {
-      title: '模块管理',
-      icon: 'biaodan'
-    },
-    children: [
-      {
-        path: 'create',
-        component: () => import('@/views/form/create'),
-        name: 'CreateForm',
-        meta: { title: '新建模块', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/components-demo/uEditor'),
-        name: 'EditNotice',
-        meta: { title: '编辑请假', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'list',
-        component: () => import('@/views/module/complexTable'),
-        name: 'ModuleList',
-        meta: { title: '模块列表', icon: 'list' }
-      }
-    ]
-  },
-  {
-    path: '/system',
-    component: Layout,
-    redirect: '/system/list',
-    name: 'System',
-    meta: {
-      title: '系统管理',
-      icon: 'biaodan'
-    },
-    children: [
-      {
-        path: 'school',
-        component: () => import('@/views/system/schoolForm'),
-        name: 'SchoolForm',
-        meta: { title: '系统管理', icon: 'edit' }
-      },
-      {
-        path: 'wechatTemplate',
-        component: () => import('@/views/system/wechatTemplate'),
-        name: 'WechatTemplate',
-        meta: { title: '微信消息模板', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/components-demo/uEditor'),
-        name: 'EditNotice',
-        meta: { title: '编辑请假', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'list',
-        component: () => import('@/views/module/complexTable'),
-        name: 'ModuleList',
-        meta: { title: '模块列表', icon: 'list' }
-      }
-    ]
-  },
   { path: '*', redirect: '/404', hidden: true },
   {
     path: '/message',
@@ -312,6 +244,75 @@ export default new Router({
 })
 
 export const asyncRoutes = [
+  {
+    path: '/module',
+    component: Layout,
+    redirect: '/module/list',
+    name: 'Module',
+    meta: {
+      title: '模块管理',
+      icon: 'biaodan',
+      roles: [0]
+    },
+    children: [
+      {
+        path: 'create',
+        component: () => import('@/views/form/create'),
+        name: 'CreateForm',
+        meta: { title: '新建模块', icon: 'edit', roles: [0] }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/components-demo/uEditor'),
+        name: 'EditNotice',
+        meta: { title: '编辑请假', noCache: true, roles: [0] },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/module/complexTable'),
+        name: 'ModuleList',
+        meta: { title: '模块列表', icon: 'list', roles: [0] }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system/list',
+    name: 'System',
+    meta: {
+      title: '系统管理',
+      icon: 'biaodan', roles: [0]
+    },
+    children: [
+      {
+        path: 'school',
+        component: () => import('@/views/system/schoolForm'),
+        name: 'SchoolForm',
+        meta: { title: '系统管理', icon: 'edit', roles: [0] }
+      },
+      {
+        path: 'wechatTemplate',
+        component: () => import('@/views/system/wechatTemplate'),
+        name: 'WechatTemplate',
+        meta: { title: '微信消息模板', icon: 'edit', roles: [0] }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/components-demo/uEditor'),
+        name: 'EditNotice',
+        meta: { title: '编辑请假', noCache: true, roles: [0] },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/module/complexTable'),
+        name: 'ModuleList',
+        meta: { title: '模块列表', icon: 'list', roles: [0] }
+      }
+    ]
+  },
   {
     path: '/permission',
     component: Layout,

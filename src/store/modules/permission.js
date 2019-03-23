@@ -49,7 +49,7 @@ const permission = {
       return new Promise(resolve => {
         const { roles } = data
         let accessedRoutes
-        if (data.roles.includes(1) || data.roles.includes(0)) {
+        if (data.roles.includes(0)) {
           accessedRoutes = asyncRoutes
         } else {
           accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)

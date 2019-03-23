@@ -79,7 +79,7 @@ const user = {
             commit('SET_SEMESTER', semesterId)
             commit('SET_NAME', data.realname)
             commit('SET_MSGCOUNT', '')
-            commit('SET_ADMIN', data.roles.includes(1))
+            commit('SET_ADMIN', data.roles.includes(0))
             commit('SET_UID', data.uid)
             setToken(data.token)
             resolve()
