@@ -42,8 +42,8 @@
       append-to-body
       center>
       <el-form ref="ruleForm" :model="formLabelAlign" :rules="rules" label-position="right" label-width="60px">
-        <el-form-item label="课程" prop="course">
-          <el-select v-model="formLabelAlign.course" value-key="id" class="filter-item" style="width: 100%;">
+        <el-form-item label="课程">
+          <el-select v-model="formLabelAlign.course" clearable value-key="id" class="filter-item" style="width: 100%;">
             <el-option v-for="item in courseList" :key="item.id" :label="item.courseName + '(' + item.teacherName + ')'" :value="item"/>
           </el-select>
         </el-form-item>
@@ -148,10 +148,7 @@ export default {
   },
   created() {
     this.getTimes()
-    if (this.classId) {
-      this.fetchCourseByClassId()
-    }
-    this.get('2018', '2')
+    this.get()
   },
   methods: {
     resetParent() {
@@ -160,8 +157,7 @@ export default {
         course: undefined,
         fid: this.$store.state.user.fid,
         id: undefined,
-        year: 2018,
-        semester: this.$store.state.user.semesterId,
+        semesterId: this.$store.state.user.semesterId,
         teacherId: undefined,
         week: undefined,
         courseId: undefined,
@@ -170,6 +166,7 @@ export default {
     },
     updateParent(week, sequence, item) {
       if (this.classId && this.$store.state.user.admin) {
+        this.fetchCourseByClassId()
         this.resetParent()
         if (item) {
           this.formLabelAlign.id = item.id
@@ -188,15 +185,11 @@ export default {
       this.$refs['ruleForm'].validate((valid) => {
         if (valid) {
           this.formLabelAlign.courseId = this.formLabelAlign.course.id
-          if (this.formLabelAlign.courseId) {
-            this.formLabelAlign.teacherId = this.formLabelAlign.course.teacherId
-            updateSchedule(this.formLabelAlign).then(response => {
-              this.get('2018', '2')
-              this.dialogVisible = false
-            })
-          } else {
+          this.formLabelAlign.teacherId = this.formLabelAlign.course.teacherId
+          updateSchedule(this.formLabelAlign).then(response => {
+            this.get()
             this.dialogVisible = false
-          }
+          })
         }
       }
       )
@@ -206,7 +199,7 @@ export default {
         this.courseList = response.data.result
       })
     },
-    get: function(year, semester) {
+    get: function() {
       fetchScheduleList(this.listQuery)
         .then(response => {
           var tempSchedule = [[], [], [], [], [], [], []]

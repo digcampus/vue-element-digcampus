@@ -5,10 +5,10 @@
       <el-select v-model="listQuery.sex" placeholder="性别" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
       </el-select>
-      <el-select v-if="!classId" v-model="listQuery.gradeId" placeholder="年级" clearable class="filter-item" style="width: 130px" @change="updateClass">
+      <el-select v-if="!classId" v-model="searchQuery.gradeId" placeholder="年级" clearable class="filter-item" style="width: 130px" @change="updateClass">
         <el-option v-for="item in gradeList" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
-      <el-select v-if="!classId" v-model="listQuery.classId" placeholder="班级" clearable class="filter-item" style="width: 150px">
+      <el-select v-if="!classId" v-model="searchQuery.classId" placeholder="班级" clearable class="filter-item" style="width: 150px">
         <el-option v-for="item in classList" :key="item.id" :label="item.name" :value="item.id"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
@@ -139,7 +139,7 @@
               <el-input v-model="temp.tel"/>
             </el-form-item>
             <el-form-item label="性别" prop="sex">
-              <el-select v-model="temp.sex" class="filter-item" placeholder="Please select">
+              <el-select v-model="temp.sex" class="filter-item" placeholder="请选择...">
                 <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
               </el-select>
             </el-form-item>
@@ -311,11 +311,16 @@ export default {
         courseId: undefined,
         gradeId: undefined,
         classId: this.classId,
+        uid: undefined,
         fid: this.$store.state.user.fid,
         sex: undefined,
         name: undefined,
         type: undefined,
         sort: '+id'
+      },
+      searchQuery: {
+        gradeId: undefined,
+        classId: undefined
       },
       gradeQuery: {
         page: 1,
@@ -490,10 +495,10 @@ export default {
       return this.userList
     },
     updateClass() {
-      this.listQuery.classId = undefined
+      this.searchQuery.classId = undefined
       for (const index in this.gradeList) {
         const grade = this.gradeList[index]
-        if (grade.id === this.listQuery.gradeId) {
+        if (grade.id === this.searchQuery.gradeId) {
           this.classList = grade.clazzList
         }
       }
@@ -518,14 +523,14 @@ export default {
       this.multipleSelection = []
       this.listLoading = true
       fetchTeacherList(this.listQuery).then(response => {
-        this.list = response.data.result.list.filter(data => !this.listQuery.gradeId || data.classMap.length > 0)
+        this.list = response.data.result.list.filter(data => !(typeof this.searchQuery.gradeId === 'number') ||
+          (data.classMap.filter(data => (this.searchQuery.gradeId === data.gradeId && (!(typeof this.searchQuery.classId === 'number') || data.classId === this.searchQuery.classId))).length > 0))
         this.total = response.data.result.total
         this.listLoading = false
       }
       )
     },
     handleFilter() {
-      this.listQuery.page = 1
       this.getList()
     },
     handleSizeChange(val) {
@@ -625,19 +630,21 @@ export default {
     },
     handleUpdate(row, disabled) {
       this.disabled = disabled
-      this.temp = Object.assign({}, row) // copy obj
-      // 避免数组浅拷贝，修改之前数据。
-      this.temp.classMap = JSON.parse(JSON.stringify(this.temp.classMap))
-      if (this.temp.enrollmentDate != null) {
-        this.temp.enrollmentDate = new Date(this.temp.enrollmentDate)
-      }
-      this.dialogStatus = 'update'
-      this.hackReset = false
-      this.dialogFormVisible = true
-      this.activeName = 'first'
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-        this.hackReset = true
+      fetchTeacherList({ uid: row.uid, fid: this.$store.state.user.fid }).then(response => {
+        this.temp = Object.assign({}, response.data.result.list[0]) // copy obj
+        // 避免数组浅拷贝，修改之前数据。
+        this.temp.classMap = JSON.parse(JSON.stringify(this.temp.classMap))
+        if (this.temp.enrollmentDate != null) {
+          this.temp.enrollmentDate = new Date(this.temp.enrollmentDate)
+        }
+        this.dialogStatus = 'update'
+        this.hackReset = false
+        this.dialogFormVisible = true
+        this.activeName = 'first'
+        this.$nextTick(() => {
+          this.$refs['dataForm'].clearValidate()
+          this.hackReset = true
+        })
       })
     },
     updateData() {
