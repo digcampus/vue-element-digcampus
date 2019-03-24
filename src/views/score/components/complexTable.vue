@@ -305,9 +305,7 @@ export default {
       return (sum / this.scoreList[0].length).toFixed(2)
     },
     fetchExamNameListByFid() {
-      debugger
       fetchExamNameListByFid(this.$store.state.user.fid).then(response => {
-        debugger
         this.examList = response.data.result
       })
     },

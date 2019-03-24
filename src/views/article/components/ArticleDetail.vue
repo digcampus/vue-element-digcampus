@@ -12,16 +12,17 @@
           <el-input v-model="article.title" :rows="1" :minlength="1" :maxlength="50" type="text" placeholder="请输入标题(少于50字)" style="width:80%;"/>
         </el-col>
         <el-col :span="1" class="line">收件人</el-col>
-        <el-col :span="11">
+        <el-col v-if="$store.state.user.admin" :span="11">
+          <el-checkbox-group v-model="checkList">
+            <el-checkbox v-for="type in userTypes" :label="type.id" :key="type.id">{{ type.name }}</el-checkbox>
+          </el-checkbox-group>
+        </el-col>
+        <el-col v-if="!$store.state.user.admin" :span="11">
           <el-button type="success" size="mini" @click="showSelectUser">收件人</el-button>
         </el-col>
       </el-form-item>
-      <el-form-item label="发布者" style="margin-bottom:12px;" label-width="120px">
+      <el-form-item v-if="$store.state.user.admin" prop="moduleProp" label="所属模块" style="margin-bottom:12px;" label-width="120px">
         <el-col :span="12">
-          <el-input v-model="article.publishUser" :rows="1" :maxlength="50" type="text" style="width:80%;"/>
-        </el-col>
-        <el-col :span="1" class="line">所属模块</el-col>
-        <el-col :span="11">
           <el-cascader
             v-model="articleModuleList"
             :options="moduleList"
@@ -31,6 +32,11 @@
             expand-trigger="hover"
             style="width: 80%;"
             @change="handleChange"/>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="发布者" style="margin-bottom:12px;" label-width="120px">
+        <el-col :span="12">
+          <el-input v-model="article.publishUser" :rows="1" :maxlength="50" type="text" style="width:80%;"/>
         </el-col>
       </el-form-item>
       <div class="createPost-main-container">
@@ -131,7 +137,19 @@ export default {
     }
   },
   data() {
+    var moduleValidate = (rule, value, callback) => {
+      if (this.articleModuleList.length < 1) {
+        return callback(new Error('所属模块不能为空!'))
+      } else {
+        callback()
+      }
+    }
     return {
+      userTypes: [
+        { name: '全体教师', id: 1 },
+        { name: '全体学生', id: 2 }
+      ],
+      checkList: [1],
       data: data,
       defaultExpandAll: false,
       key: 1,
@@ -205,7 +223,8 @@ export default {
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' },
           { min: 1, max: 50, message: '长度必须在4到50个字符之间', trigger: 'blur' }
-        ]
+        ],
+        moduleProp: [{ validator: moduleValidate, trigger: 'change' }]
       },
       isShowConfirm: false, // 用于控制整个窗口的显示/隐藏
       titleText: '提示', // 提示框标题
