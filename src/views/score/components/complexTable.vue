@@ -117,7 +117,7 @@
 
 <script>
 import { createArticle, updateArticle } from '@/api/article'
-import { fetchSemesterGradeList, fetchGradeList, deleteGrade, fetchExamListByClassId, fetchScoreListByClassAndSemester } from '@/api/user'
+import { fetchExamNameListByFid, fetchSemesterGradeList, fetchGradeList, deleteGrade, fetchScoreListByClassAndSemester } from '@/api/user'
 import waves from '@/directive/waves' // 水波纹指令
 import editClass from '@/views/grade/editClass'
 import editGrade from '@/views/grade/editGrade'
@@ -204,7 +204,7 @@ export default {
     }
   },
   created() {
-    this.fetchExamListByClassId()
+    this.fetchExamNameListByFid()
     this.fetchGradeList()
   },
   methods: {
@@ -304,8 +304,10 @@ export default {
       }
       return (sum / this.scoreList[0].length).toFixed(2)
     },
-    fetchExamListByClassId() {
-      fetchExamListByClassId(1).then(response => {
+    fetchExamNameListByFid() {
+      debugger
+      fetchExamNameListByFid(this.$store.state.user.fid).then(response => {
+        debugger
         this.examList = response.data.result
       })
     },

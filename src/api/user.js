@@ -311,10 +311,17 @@ export function fetchWechatTemplateList(fid) {
 
 // 根据学校名称，模糊查询
 export function fetchSchoolList(query) {
-  debugger
   return request({
     url: '/school/list',
     method: 'get',
     params: { 'name': query }
+  })
+}
+
+// 获取指定年级的考试
+export function fetchExamNameListByFid(fid) {
+  return request({
+    url: '/course/examNameList/' + fid,
+    method: 'get'
   })
 }
