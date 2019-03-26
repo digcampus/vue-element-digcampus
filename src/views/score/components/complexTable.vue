@@ -74,6 +74,11 @@
         <el-table-column :prop="'rank_' + message" :formatter="formatScoreRank" label="班级排名" align="center" min-width="105" sortable/>
         <el-table-column :prop="'sum_rank_' + message" :formatter="formatScoreRank" label="年级排名" align="center" min-width="105" sortable/>
       </el-table-column>
+      <el-table-column label="状态" align="center" width="60" >
+        <template slot-scope="scope">
+          <span>微信</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" min-width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button v-if="$store.state.user.admin" type="primary" size="mini" @click="handleUpdate(scope.row, scope.$index, false)">{{ $t('table.edit') }}</el-button>
@@ -103,11 +108,12 @@
         accept=".xls,.xlsx"
         class="upload-demo">
         <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">校验文件</el-button>
         <div slot="tip" class="el-upload__tip">只能上传excel文件，且不超过5MB</div>
+        <div slot="tip" class="el-upload__tip" style="color:red;">{{ errorUploadMsg }}</div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogUploadVisible = false">{{ $t('table.confirm') }}</el-button>
+        <el-button :disabled="excelList.length<1" type="primary" @click="dialogUploadVisible = false">上传</el-button>
       </div>
     </el-dialog>
 
@@ -200,7 +206,8 @@ export default {
           url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
         }],
       excelList: [
-      ]
+      ],
+      errorUploadMsg: undefined
     }
   },
   created() {
@@ -212,12 +219,15 @@ export default {
       this.$refs.upload.submit()
     },
     handleSuccess(response, file, excelList) {
-      if (response == null) {
+      if (response.code !== 200) {
+        this.errorUploadMsg = response.message
         return
+      } else {
+        this.excelList = excelList
       }
     },
     getImportFileUrl() {
-      this.importFileUrl = window.UEDITOR_HOME_URL + 'course/importExcel/' + this.listQuery.exam.id + '/' + this.listQuery.grade.id + '/' + this.listQuery.class.id
+      this.importFileUrl = window.UEDITOR_HOME_URL + 'course/importExcel/' + this.listQuery.exam.id + '/' + this.listQuery.grade.id + '/' + this.listQuery.class.id + '/' + this.$store.state.user.uid
     },
     beforeUpload(file) {
       const isExcel = (file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -248,6 +258,8 @@ export default {
           this.semesterGradeList = response.data.result
         })
       }
+      this.listQuery.grade = {}
+      this.listQuery.class = {}
     },
     fetchGradeList() {
       fetchGradeList(this.listQuery).then(response => {
@@ -263,6 +275,7 @@ export default {
           }
         }
       }
+      this.listQuery.class = {}
     },
     getRowClass({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0 && column.colSpan === 3) {

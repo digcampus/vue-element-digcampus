@@ -9,11 +9,12 @@
       <el-select v-if="!classId" v-model="listQuery.gradeId" placeholder="年级" clearable class="filter-item" style="width: 130px" @change="updateClass">
         <el-option v-for="item in gradeList" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
-      <el-select v-if="!classId" v-model="listQuery.classId" placeholder="班级" clearable class="filter-item" style="width: 150px">
+      <el-select v-if="!classId" v-model="listQuery.classId" placeholder="班级" clearable class="filter-item" style="width: 150px" @change="getImportFileUrl">
         <el-option v-for="item in classList" :key="item.id" :label="item.name" :value="item.id"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <el-button v-if="$store.state.user.admin && type" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
+      <el-button v-waves v-if="$store.state.user.admin && !classId" :disabled="!listQuery.classId" class="filter-item" type="primary" icon="el-icon-upload" @click="dialogUploadVisible = true">上传学生</el-button>
       <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">显示家长</el-checkbox>
     </div>
 
@@ -63,17 +64,12 @@
           <span>{{ scope.row.nativePlace }}</span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="民族" width="60px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.folk }}</span>
-        </template>
-      </el-table-column>
       <el-table-column v-if="false" :show-overflow-tooltip="true" label="角色" width="60px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.role }}</span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="家庭地址" min-width="180px">
+      <el-table-column :show-overflow-tooltip="true" label="家庭地址" min-width="150px">
         <template slot-scope="scope">
           <span class="link-type" style="text-overflow:ellipsis;" @click="handleUpdate(scope.row, true)">{{ scope.row.address }}</span>
         </template>
@@ -83,19 +79,14 @@
           <span>{{ scope.row.tel }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="!classId" label="入学时间" width="120px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.enrollmentDate }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="false" :show-overflow-tooltip="true" label="年级" width="100px" align="center">
+      <el-table-column :show-overflow-tooltip="true" label="年级" width="100px" align="center">
         <template slot-scope="scope">
           <span>
             {{ scope.row.clazz == null ? '' : (scope.row.clazz.grade == null ? '' : scope.row.clazz.grade.name) }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column v-if="!classId" :show-overflow-tooltip="true" label="班级" min-width="80px" align="center">
+      <el-table-column v-if="!classId" :show-overflow-tooltip="true" label="班级" width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.clazz == null ? '' : scope.row.clazz.name }}</span>
         </template>
@@ -256,6 +247,30 @@
       </div>
     </el-dialog>
 
+    <el-dialog :visible.sync="dialogUploadVisible" title="上传学生信息" width="30%">
+      <el-upload
+        ref="upload"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :file-list="excelList"
+        :auto-upload="false"
+        :limit="1"
+        :on-exceed="handleExceed"
+        :on-success="handleSuccess"
+        :before-upload="beforeUpload"
+        :before-remove="beforeRemove"
+        :action="importFileUrl"
+        accept=".xls,.xlsx"
+        class="upload-demo">
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传文件</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传excel文件，且不超过5MB</div>
+        <div slot="tip" class="el-upload__tip" style="color:red;">{{ errorUploadMsg }}</div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogUploadVisible = false">上传</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -313,6 +328,7 @@ export default {
   },
   data() {
     return {
+      dialogUploadVisible: false,
       disabled: true,
       tableKey: 0,
       list: null,
@@ -377,7 +393,11 @@ export default {
         stuNo: [{ required: true, message: '学号不能为空', trigger: 'blur' }]
       },
       downloadLoading: false,
-      userList: []
+      userList: [],
+      excelList: [
+      ],
+      importFileUrl: undefined,
+      errorUploadMsg: undefined
     }
   },
   created() {
@@ -385,6 +405,43 @@ export default {
     this.fetchGradeList()
   },
   methods: {
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    handleSuccess(response, file, excelList) {
+      if (response.code !== 200) {
+        this.errorUploadMsg = response.message
+        return
+      } else {
+        this.excelList = excelList
+      }
+    },
+    getImportFileUrl() {
+      this.importFileUrl = window.UEDITOR_HOME_URL + 'student/importExcel/' + this.listQuery.fid + '/' + this.listQuery.classId
+    },
+    beforeUpload(file) {
+      const isExcel = (file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      const isLt2M = file.size / 1024 / 1024 < 5
+      if (!isExcel) {
+        this.$message.error('只能上传Excel文件!')
+      }
+      if (!isLt2M) {
+        this.$message.error('Excel文件大小不能超过5MB!')
+      }
+      return isExcel && isLt2M
+    },
+    handleRemove(file, excelList) {
+      console.log(file, excelList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleExceed(files, excelList) {
+      this.$message.warning(`只能上传一个文件，请先删除之前文件!`)
+    },
+    beforeRemove(file, excelList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
     getSelectUser() {
       return this.userList
     },

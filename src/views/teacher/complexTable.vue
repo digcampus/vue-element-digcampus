@@ -13,6 +13,7 @@
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <el-button v-if="$store.state.user.admin && !classId" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
+      <el-button v-if="$store.state.user.admin && !classId" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-upload" @click="getImportFileUrl()">导入老师</el-button>
       <el-popover
         v-if="$store.state.user.admin"
         v-model="courseData.visiblePopover"
@@ -232,6 +233,30 @@
       </div>
     </el-dialog>
 
+    <el-dialog :visible.sync="dialogUploadVisible" title="上传教师信息" width="30%">
+      <el-upload
+        ref="upload"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :file-list="excelList"
+        :auto-upload="false"
+        :limit="1"
+        :on-exceed="handleExceed"
+        :on-success="handleSuccess"
+        :before-upload="beforeUpload"
+        :before-remove="beforeRemove"
+        :action="importFileUrl"
+        accept=".xls,.xlsx"
+        class="upload-demo">
+        <el-button slot="trigger" size="small" type="primary">选取Excel文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传文件</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传excel文件，且不超过5MB</div>
+        <div slot="tip" class="el-upload__tip" style="color:red;">{{ errorUploadMsg }}</div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogUploadVisible = false">上传</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -299,6 +324,7 @@ export default {
   },
   data() {
     return {
+      dialogUploadVisible: false,
       hackReset: false,
       activeName: 'first',
       tableKey: 0,
@@ -377,7 +403,11 @@ export default {
       multipleSelection: [],
       gradeList: [],
       userList: [],
-      disabled: true
+      disabled: true,
+      excelList: [
+      ],
+      importFileUrl: undefined,
+      errorUploadMsg: undefined
     }
   },
   created() {
@@ -395,6 +425,44 @@ export default {
     this.fetchCourseList()
   },
   methods: {
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    handleSuccess(response, file, excelList) {
+      if (response.code !== 200) {
+        this.errorUploadMsg = response.message
+        return
+      } else {
+        this.excelList = excelList
+      }
+    },
+    getImportFileUrl() {
+      this.dialogUploadVisible = true
+      this.importFileUrl = window.UEDITOR_HOME_URL + 'teacher/importExcel/' + this.listQuery.fid
+    },
+    beforeUpload(file) {
+      const isExcel = (file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      const isLt2M = file.size / 1024 / 1024 < 5
+      if (!isExcel) {
+        this.$message.error('只能上传Excel文件!')
+      }
+      if (!isLt2M) {
+        this.$message.error('Excel文件大小不能超过5MB!')
+      }
+      return isExcel && isLt2M
+    },
+    handleRemove(file, excelList) {
+      console.log(file, excelList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleExceed(files, excelList) {
+      this.$message.warning(`只能上传一个文件，请先删除之前文件!`)
+    },
+    beforeRemove(file, excelList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
     deleteParent(index) {
       this.temp.classMap.splice(index, 1)
     },
