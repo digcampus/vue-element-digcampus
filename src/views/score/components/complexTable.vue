@@ -22,6 +22,10 @@
       border
       highlight-current-row
       style="width: 100%;min-height:300px;">
+      <el-table-column
+        :reserve-selection="true"
+        type="selection"
+        width="35"/>
       <el-table-column :label="$t('table.id')" align="center" min-width="50">
         <template slot-scope="scope">
           <span>{{ scope.$index+1 }}</span>
@@ -76,7 +80,7 @@
       </el-table-column>
       <el-table-column label="状态" align="center" width="60" >
         <template slot-scope="scope">
-          <span>微信</span>
+          <span><svg-icon icon-class="weixin-disable"/><svg-icon icon-class="weixin"/></span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" min-width="230" class-name="small-padding fixed-width">
@@ -292,6 +296,7 @@ export default {
       return row[column.property]
     },
     formatScoreRank(row, column, cellValue, index) {
+      debugger
       return row[column.property]
     },
     formatSum(row, column, cellValue, index) {
